@@ -8,7 +8,7 @@ import {
     RiseOutlined,
     TwitterOutlined,
 } from "@ant-design/icons";
-import { Avatar, Drawer, Dropdown, MenuProps, Space, message } from "antd";
+import { Avatar, Drawer, Dropdown, MenuProps, Space, notification } from "antd";
 import { Menu, ConfigProvider } from "antd";
 import styles from "@/styles/client.module.scss";
 import { isMobile } from "react-device-detect";
@@ -20,7 +20,7 @@ import { callLogout } from "@/config/api";
 import { setLogoutAction } from "@/redux/slice/accountSlide";
 import ManageAccount from "./modal/manage.account";
 
-const Header = (props: any) => {
+const Header = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -62,12 +62,15 @@ const Header = (props: any) => {
     };
 
     const handleLogout = async () => {
-        const res = await callLogout();
-        if (res && res.data) {
+        try {
+            await callLogout();
             dispatch(setLogoutAction({}));
-            message.success("Đăng xuất thành công");
+            notification.success({
+                message: "Đăng xuất thành công",
+                duration: 2,
+            });
             navigate("/");
-        }
+        } catch (error) {}
     };
 
     const itemsDropdown = [
