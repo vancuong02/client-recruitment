@@ -47,7 +47,7 @@ export const callFetchAccount = () => {
 };
 
 export const callRefreshToken = () => {
-    return axios.get<IBackendRes<IAccount>>("/api/v1/auth/refresh");
+    return axios.get<IBackendRes<IAccount>>("/api/v1/auth/refresh-token");
 };
 
 export const callLogout = () => {

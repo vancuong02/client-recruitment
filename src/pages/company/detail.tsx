@@ -1,12 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import { ICompany } from "@/types/backend";
 import { callFetchCompanyById } from "@/config/api";
-import styles from 'styles/client.module.scss';
-import parse from 'html-react-parser';
+import styles from "styles/client.module.scss";
+import parse from "html-react-parser";
 import { Col, Divider, Row, Skeleton } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
-
 
 const ClientCompanyDetailPage = (props: any) => {
     const [companyDetail, setCompanyDetail] = useState<ICompany | null>(null);
@@ -19,24 +18,28 @@ const ClientCompanyDetailPage = (props: any) => {
     useEffect(() => {
         const init = async () => {
             if (id) {
-                setIsLoading(true)
+                setIsLoading(true);
                 const res = await callFetchCompanyById(id);
                 if (res?.data) {
-                    setCompanyDetail(res.data)
+                    setCompanyDetail(res.data);
                 }
-                setIsLoading(false)
+                setIsLoading(false);
             }
-        }
+        };
         init();
     }, [id]);
 
+    console.log("companyDetail", companyDetail);
+
     return (
-        <div className={`${styles["container"]} ${styles["detail-job-section"]}`}>
-            {isLoading ?
+        <div
+            className={`${styles["container"]} ${styles["detail-job-section"]}`}
+        >
+            {isLoading ? (
                 <Skeleton />
-                :
+            ) : (
                 <Row gutter={[20, 20]}>
-                    {companyDetail && companyDetail._id &&
+                    {companyDetail && companyDetail._id && (
                         <>
                             <Col span={24} md={16}>
                                 <div className={styles["header"]}>
@@ -44,7 +47,10 @@ const ClientCompanyDetailPage = (props: any) => {
                                 </div>
 
                                 <div className={styles["location"]}>
-                                    <EnvironmentOutlined style={{ color: '#58aaab' }} />&nbsp;{(companyDetail?.address)}
+                                    <EnvironmentOutlined
+                                        style={{ color: "#58aaab" }}
+                                    />
+                                    &nbsp;{companyDetail?.location}
                                 </div>
 
                                 <Divider />
@@ -56,19 +62,17 @@ const ClientCompanyDetailPage = (props: any) => {
                                     <div>
                                         <img
                                             alt="example"
-                                            src={`${import.meta.env.VITE_BACKEND_URL}/images/company/${companyDetail?.logo}`}
+                                            src={companyDetail.logo}
                                         />
                                     </div>
-                                    <div>
-                                        {companyDetail?.name}
-                                    </div>
+                                    <div>{companyDetail?.name}</div>
                                 </div>
                             </Col>
                         </>
-                    }
+                    )}
                 </Row>
-            }
+            )}
         </div>
-    )
-}
+    );
+};
 export default ClientCompanyDetailPage;

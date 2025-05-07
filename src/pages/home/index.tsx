@@ -10,16 +10,13 @@ const HomePage = () => {
     console.log("user", user);
 
     return (
-        <div className={`${styles["container"]} ${styles["home-section"]}`}>
-            <div className="search-content" style={{ marginTop: 20 }}>
-                <SearchClient />
+        <>
+            <SearchClient />
+            <div className={`${styles["container"]} ${styles["home-section"]}`}>
+                <CompanyCard />
+                <JobCard />
             </div>
-            <Divider />
-            <CompanyCard />
-            <div style={{ margin: 50 }}></div>
-            <Divider />
-            <JobCard />
-        </div>
+        </>
     );
 };
 

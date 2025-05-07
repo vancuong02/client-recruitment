@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from "react";
 import {
     createBrowserRouter,
     Outlet,
     RouterProvider,
     useLocation,
 } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useEffect, useRef } from "react";
 import NotFound from "components/share/not.found";
-import Loading from "components/share/loading";
 import LoginPage from "pages/auth/login";
 import RegisterPage from "pages/auth/register";
 import LayoutAdmin from "components/admin/layout.admin";
@@ -22,7 +20,6 @@ import PermissionPage from "./pages/admin/permission";
 import ResumePage from "./pages/admin/resume";
 import RolePage from "./pages/admin/role";
 import UserPage from "./pages/admin/user";
-import { fetchAccount } from "./redux/slice/accountSlide";
 import LayoutApp from "./components/share/layout.app";
 import JobPage from "./pages/admin/job";
 import ViewUpsertJob from "./components/admin/job/upsert.job";
@@ -32,7 +29,6 @@ import ClientCompanyPage from "./pages/company";
 import ClientCompanyDetailPage from "./pages/company/detail";
 
 const LayoutClient = () => {
-    const [searchTerm, setSearchTerm] = useState("");
     const location = useLocation();
     const rootRef = useRef<HTMLDivElement>(null);
 
@@ -44,9 +40,9 @@ const LayoutClient = () => {
 
     return (
         <div className="layout-app" ref={rootRef}>
-            <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            <Header />
             <div className={styles["content-app"]}>
-                <Outlet context={[searchTerm, setSearchTerm]} />
+                <Outlet />
             </div>
             <Footer />
         </div>

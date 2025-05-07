@@ -9,7 +9,7 @@ import {
     TwitterOutlined,
 } from "@ant-design/icons";
 import { Avatar, Drawer, Dropdown, MenuProps, Space, notification } from "antd";
-import { Menu, ConfigProvider } from "antd";
+import { Menu } from "antd";
 import styles from "@/styles/client.module.scss";
 import { isMobile } from "react-device-detect";
 import { FaReact } from "react-icons/fa";
@@ -110,32 +110,29 @@ const Header = () => {
     return (
         <>
             <div className={styles["header-section"]}>
-                <div className={styles["container"]}>
+                <div className={styles["container"]} style={{ height: "100%" }}>
                     {!isMobile ? (
-                        <div style={{ display: "flex", gap: 30 }}>
+                        <div
+                            style={{
+                                gap: 10,
+                                height: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                            }}
+                        >
                             <div className={styles["brand"]}>
                                 <FaReact
+                                    title=""
                                     onClick={() => navigate("/")}
-                                    title="Hỏi Dân IT"
                                 />
                             </div>
                             <div className={styles["top-menu"]}>
-                                <ConfigProvider
-                                    theme={{
-                                        token: {
-                                            colorPrimary: "#fff",
-                                            colorBgContainer: "#222831",
-                                            colorText: "#a7a7a7",
-                                        },
-                                    }}
-                                >
-                                    <Menu
-                                        // onClick={onClick}
-                                        selectedKeys={[current]}
-                                        mode="horizontal"
-                                        items={items}
-                                    />
-                                </ConfigProvider>
+                                <Menu
+                                    style={{ width: "100%" }}
+                                    items={items}
+                                    mode="horizontal"
+                                    selectedKeys={[current]}
+                                />
                                 <div className={styles["extra"]}>
                                     {isAuthenticated === false ? (
                                         <Link to={"/login"}>Đăng Nhập</Link>
@@ -151,7 +148,6 @@ const Header = () => {
                                                     Welcome {user?.name}
                                                 </span>
                                                 <Avatar>
-                                                    {" "}
                                                     {user?.name
                                                         ?.substring(0, 2)
                                                         ?.toUpperCase()}{" "}

@@ -7,10 +7,10 @@ export interface IBackendRes<T> {
 
 export interface IModelPaginate<T> {
     meta: {
-        current: number;
+        currentPage: number;
         pageSize: number;
-        pages: number;
-        total: number;
+        totalPages: number;
+        totalItems: number;
     };
     result: T[];
 }
@@ -40,7 +40,7 @@ export interface IGetAccount extends Omit<IAccount, "access_token"> {}
 export interface ICompany {
     _id?: string;
     name?: string;
-    address?: string;
+    location?: string;
     logo: string;
     description?: string;
     createdBy?: string;

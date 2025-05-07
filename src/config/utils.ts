@@ -13,6 +13,28 @@ export const SKILLS_LIST = [
     { label: "Fullstack", value: "FULLSTACK" },
 ];
 
+export const LEVEL_LIST = [
+    { label: "Intern", value: "INTERN" },
+    { label: "Fresher", value: "FRESHER" },
+    { label: "Junior", value: "JUNIOR" },
+    { label: "Middle", value: "MIDDLE" },
+    { label: "Senior", value: "SENIOR" },
+    { label: "All Levels", value: "ALL" },
+];
+
+export const TYPE_CONTRACT_LIST = [
+    { label: "Full-time", value: "FULL_TIME" },
+    { label: "Part-time", value: "PART_TIME" },
+    { label: "Freelance", value: "FREELANCE" },
+];
+
+export const TYPE_WORK_LIST = [
+    { label: "In Office", value: "IN_OFFICE" },
+    { label: "Hybrid", value: "HYBRID" },
+    { label: "Remote", value: "REMOTE" },
+    { label: "Onsite", value: "ONSITE" },
+];
+
 export const LOCATION_LIST = [
     { label: "Hà Nội", value: "HANOI" },
     { label: "Hồ Chí Minh", value: "HOCHIMINH" },

@@ -1,25 +1,22 @@
-import SearchClient from '@/components/client/search.client';
-import { Col, Divider, Row } from 'antd';
-import styles from 'styles/client.module.scss';
-import JobCard from '@/components/client/card/job.card';
+import { Col, Row } from "antd";
+import styles from "styles/client.module.scss";
+import JobCard from "@/components/client/card/job.card";
+import SearchClient from "@/components/client/search.client";
 
 const ClientJobPage = (props: any) => {
     return (
-        <div className={styles["container"]} style={{ marginTop: 20 }}>
-            <Row gutter={[20, 20]}>
-                <Col span={24}>
-                    <SearchClient />
-                </Col>
-                <Divider />
+        <Row gutter={[20, 20]}>
+            <Col span={24}>
+                <SearchClient />
+            </Col>
 
-                <Col span={24}>
-                    <JobCard
-                        showPagination={true}
-                    />
-                </Col>
-            </Row>
-        </div>
-    )
-}
+            <Col span={24}>
+                <div className={`${styles["container"]}`}>
+                    <JobCard showPagination={true} />
+                </div>
+            </Col>
+        </Row>
+    );
+};
 
 export default ClientJobPage;

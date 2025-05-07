@@ -22,7 +22,7 @@ const NO_RETRY_HEADER = "x-no-retry";
 const handleRefreshToken = async (): Promise<string | null> => {
     return await mutex.runExclusive(async () => {
         const res = await instance.get<IBackendRes<AccessTokenResponse>>(
-            "/api/v1/auth/refresh"
+            "/api/v1/auth/refresh-token"
         );
         if (res && res.data) return res.data.access_token;
         else return null;
@@ -75,7 +75,7 @@ instance.interceptors.response.use(
             error.config &&
             error.response &&
             +error.response.status === 400 &&
-            error.config.url === "/api/v1/auth/refresh" &&
+            error.config.url === "/api/v1/auth/refresh-token" &&
             location.pathname.startsWith("/admin")
         ) {
             const message =
