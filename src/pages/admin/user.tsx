@@ -3,12 +3,12 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchUser } from "@/redux/slice/userSlide";
 import { IUser } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { ActionType, ProColumns } from "@ant-design/pro-components";
 import { Button, Popconfirm, Space, message, notification } from "antd";
-import { useState, useRef } from 'react';
-import dayjs from 'dayjs';
+import { useState, useRef } from "react";
+import dayjs from "dayjs";
 import { callDeleteUser } from "@/config/api";
-import queryString from 'query-string';
+import queryString from "query-string";
 import ModalUser from "@/components/admin/user/modal.user";
 import ViewDetailUser from "@/components/admin/user/view.user";
 import Access from "@/components/share/access";
@@ -21,85 +21,87 @@ const UserPage = () => {
 
     const tableRef = useRef<ActionType>();
 
-    const isFetching = useAppSelector(state => state.user.isFetching);
-    const meta = useAppSelector(state => state.user.meta);
-    const users = useAppSelector(state => state.user.result);
+    const isFetching = useAppSelector((state) => state.user.isFetching);
+    const meta = useAppSelector((state) => state.user.meta);
+    const users = useAppSelector((state) => state.user.result);
     const dispatch = useAppDispatch();
 
     const handleDeleteUser = async (_id: string | undefined) => {
         if (_id) {
             const res = await callDeleteUser(_id);
             if (res && res.data) {
-                message.success('Xóa User thành công');
+                message.success("Xóa User thành công");
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
-                    description: res.message
+                    message: "Có lỗi xảy ra",
+                    description: res.message,
                 });
             }
         }
-    }
+    };
 
     const reloadTable = () => {
         tableRef?.current?.reload();
-    }
+    };
 
     const columns: ProColumns<IUser>[] = [
         {
-            title: 'Id',
-            dataIndex: '_id',
+            title: "Id",
+            dataIndex: "_id",
             width: 250,
             render: (text, record, index, action) => {
                 return (
-                    <a href="#" onClick={() => {
-                        setOpenViewDetail(true);
-                        setDataInit(record);
-                    }}>
+                    <a
+                        href="#"
+                        onClick={() => {
+                            setOpenViewDetail(true);
+                            setDataInit(record);
+                        }}
+                    >
                         {record._id}
                     </a>
-                )
+                );
             },
             hideInSearch: true,
         },
         {
-            title: 'Name',
-            dataIndex: 'name',
+            title: "Name",
+            dataIndex: "name",
             sorter: true,
         },
         {
-            title: 'Email',
-            dataIndex: 'email',
+            title: "Email",
+            dataIndex: "email",
             sorter: true,
         },
 
         {
-            title: 'CreatedAt',
-            dataIndex: 'createdAt',
+            title: "CreatedAt",
+            dataIndex: "createdAt",
             width: 200,
             sorter: true,
             render: (text, record, index, action) => {
                 return (
-                    <>{dayjs(record.createdAt).format('DD-MM-YYYY HH:mm:ss')}</>
-                )
+                    <>{dayjs(record.createdAt).format("DD-MM-YYYY HH:mm:ss")}</>
+                );
             },
             hideInSearch: true,
         },
         {
-            title: 'UpdatedAt',
-            dataIndex: 'updatedAt',
+            title: "UpdatedAt",
+            dataIndex: "updatedAt",
             width: 200,
             sorter: true,
             render: (text, record, index, action) => {
                 return (
-                    <>{dayjs(record.updatedAt).format('DD-MM-YYYY HH:mm:ss')}</>
-                )
+                    <>{dayjs(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</>
+                );
             },
             hideInSearch: true,
         },
         {
-
-            title: 'Actions',
+            title: "Actions",
             hideInSearch: true,
             width: 50,
             render: (_value, entity, _index, _action) => (
@@ -111,7 +113,7 @@ const UserPage = () => {
                         <EditOutlined
                             style={{
                                 fontSize: 20,
-                                color: '#ffa500',
+                                color: "#ffa500",
                             }}
                             type=""
                             onClick={() => {
@@ -133,11 +135,13 @@ const UserPage = () => {
                             okText="Xác nhận"
                             cancelText="Hủy"
                         >
-                            <span style={{ cursor: "pointer", margin: "0 10px" }}>
+                            <span
+                                style={{ cursor: "pointer", margin: "0 10px" }}
+                            >
                                 <DeleteOutlined
                                     style={{
                                         fontSize: 20,
-                                        color: '#ff4d4f',
+                                        color: "#ff4d4f",
                                     }}
                                 />
                             </span>
@@ -145,7 +149,6 @@ const UserPage = () => {
                     </Access>
                 </Space>
             ),
-
         },
     ];
 
@@ -158,16 +161,22 @@ const UserPage = () => {
 
         let sortBy = "";
         if (sort && sort.name) {
-            sortBy = sort.name === 'ascend' ? "sort=name" : "sort=-name";
+            sortBy = sort.name === "ascend" ? "sort=name" : "sort=-name";
         }
         if (sort && sort.email) {
-            sortBy = sort.email === 'ascend' ? "sort=email" : "sort=-email";
+            sortBy = sort.email === "ascend" ? "sort=email" : "sort=-email";
         }
         if (sort && sort.createdAt) {
-            sortBy = sort.createdAt === 'ascend' ? "sort=createdAt" : "sort=-createdAt";
+            sortBy =
+                sort.createdAt === "ascend"
+                    ? "sort=createdAt"
+                    : "sort=-createdAt";
         }
         if (sort && sort.updatedAt) {
-            sortBy = sort.updatedAt === 'ascend' ? "sort=updatedAt" : "sort=-updatedAt";
+            sortBy =
+                sort.updatedAt === "ascend"
+                    ? "sort=updatedAt"
+                    : "sort=-updatedAt";
         }
 
         //mặc định sort theo updatedAt
@@ -179,13 +188,11 @@ const UserPage = () => {
         temp += "&populate=role&fields=role._id, role.name";
 
         return temp;
-    }
+    };
 
     return (
         <div>
-            <Access
-                permission={ALL_PERMISSIONS.USERS.GET_PAGINATE}
-            >
+            <Access permission={ALL_PERMISSIONS.USERS.GET_PAGINATE}>
                 <DataTable<IUser>
                     actionRef={tableRef}
                     headerTitle="Danh sách Users"
@@ -195,18 +202,23 @@ const UserPage = () => {
                     dataSource={users}
                     request={async (params, sort, filter): Promise<any> => {
                         const query = buildQuery(params, sort, filter);
-                        dispatch(fetchUser({ query }))
+                        dispatch(fetchUser({ query }));
                     }}
                     scroll={{ x: true }}
-                    pagination={
-                        {
-                            current: meta.current,
-                            pageSize: meta.pageSize,
-                            showSizeChanger: true,
-                            total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
-                        }
-                    }
+                    pagination={{
+                        current: meta.current,
+                        pageSize: meta.pageSize,
+                        showSizeChanger: true,
+                        total: meta.total,
+                        showTotal: (total, range) => {
+                            return (
+                                <div>
+                                    {" "}
+                                    {range[0]}-{range[1]} trên {total} rows
+                                </div>
+                            );
+                        },
+                    }}
                     rowSelection={false}
                     toolBarRender={(_action, _rows): any => {
                         return (
@@ -235,7 +247,7 @@ const UserPage = () => {
                 setDataInit={setDataInit}
             />
         </div>
-    )
-}
+    );
+};
 
 export default UserPage;

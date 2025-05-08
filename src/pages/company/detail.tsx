@@ -29,14 +29,47 @@ const ClientCompanyDetailPage = (props: any) => {
         init();
     }, [id]);
 
-    console.log("companyDetail", companyDetail);
-
     return (
         <div
             className={`${styles["container"]} ${styles["detail-job-section"]}`}
         >
             {isLoading ? (
-                <Skeleton />
+                <Row gutter={[20, 20]} style={{ marginTop: 20 }}>
+                    <Col span={24} md={16}>
+                        <Skeleton.Input
+                            active
+                            block
+                            style={{ height: 40, marginBottom: 20 }}
+                        />
+                        <Skeleton.Input
+                            active
+                            block
+                            style={{
+                                width: "40%",
+                                height: 24,
+                                marginBottom: 20,
+                            }}
+                        />
+                        <Divider />
+                        <Skeleton active paragraph={{ rows: 10 }} />
+                    </Col>
+                    <Col span={24} md={8}>
+                        <div
+                            className={styles["company"]}
+                            style={{ textAlign: "center" }}
+                        >
+                            <Skeleton.Image
+                                active
+                                style={{
+                                    width: 200,
+                                    height: 200,
+                                    marginBottom: 20,
+                                }}
+                            />
+                            <Skeleton.Input active style={{ width: "60%" }} />
+                        </div>
+                    </Col>
+                </Row>
             ) : (
                 <Row gutter={[20, 20]}>
                     {companyDetail && companyDetail._id && (

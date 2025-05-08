@@ -65,10 +65,6 @@ const Header = () => {
         try {
             await callLogout();
             dispatch(setLogoutAction({}));
-            notification.success({
-                message: "Đăng xuất thành công",
-                duration: 2,
-            });
             navigate("/");
         } catch (error) {}
     };
@@ -135,7 +131,12 @@ const Header = () => {
                                 />
                                 <div className={styles["extra"]}>
                                     {isAuthenticated === false ? (
-                                        <Link to={"/login"}>Đăng Nhập</Link>
+                                        <Link
+                                            to={"/login"}
+                                            style={{ color: "#000000e0" }}
+                                        >
+                                            Đăng Nhập
+                                        </Link>
                                     ) : (
                                         <Dropdown
                                             menu={{ items: itemsDropdown }}
@@ -144,9 +145,6 @@ const Header = () => {
                                             <Space
                                                 style={{ cursor: "pointer" }}
                                             >
-                                                <span>
-                                                    Welcome {user?.name}
-                                                </span>
                                                 <Avatar>
                                                     {user?.name
                                                         ?.substring(0, 2)

@@ -10,6 +10,7 @@ import {
     IPermission,
     IRole,
     ISubscribers,
+    IBodyUpdateUser,
 } from "@/types/backend";
 import axios from "config/axios-customize";
 
@@ -40,10 +41,6 @@ export const callLogin = (username: string, password: string) => {
         username,
         password,
     });
-};
-
-export const callFetchAccount = () => {
-    return axios.get<IBackendRes<IGetAccount>>("/api/v1/users/profile");
 };
 
 export const callRefreshToken = () => {
@@ -126,17 +123,33 @@ export const callCreateUser = (user: IUser) => {
     return axios.post<IBackendRes<IUser>>("/api/v1/users", { ...user });
 };
 
-export const callUpdateUser = (user: IUser, id: string) => {
-    return axios.patch<IBackendRes<IUser>>(`/api/v1/users/${id}`, { ...user });
+export const callUpdateUser = (user: IBodyUpdateUser) => {
+    return axios.patch<IBackendRes<IUser>>(`/api/v1/users/profile`, {
+        ...user,
+    });
 };
 
 export const callDeleteUser = (id: string) => {
     return axios.delete<IBackendRes<IUser>>(`/api/v1/users/${id}`);
 };
 
+export const callUserById = (id: string) => {
+    return axios.get<IBackendRes<IUser>>(`/api/v1/users/${id}`);
+};
+
 export const callFetchUser = (query: string) => {
     return axios.get<IBackendRes<IModelPaginate<IUser>>>(
         `/api/v1/users?${query}`
+    );
+};
+
+export const callChangePassword = (body: {
+    currentPassword: string;
+    newPassword: string;
+}) => {
+    return axios.patch<IBackendRes<IGetAccount>>(
+        "/api/v1/users/change-password",
+        body
     );
 };
 

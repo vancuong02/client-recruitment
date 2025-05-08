@@ -14,6 +14,7 @@ const HomePage = () => {
             <SearchClient />
             <div className={`${styles["container"]} ${styles["home-section"]}`}>
                 <CompanyCard />
+                <Divider style={{ margin: "50px 0" }} />
                 <JobCard />
             </div>
         </>

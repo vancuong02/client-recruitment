@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import { useAppSelector } from "@/redux/hooks";
-import { Button, Divider, Form, Input, notification } from "antd";
+import { Button, Divider, Form, Input, message, notification } from "antd";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { callLogin } from "config/api";
@@ -37,10 +37,7 @@ const LoginPage = () => {
             if (res?.data) {
                 localStorage.setItem("access_token", res.data.access_token);
                 dispatch(setUserLoginInfo(res.data.user));
-                notification.success({
-                    message: "Đăng nhập tài khoản thành công!",
-                    duration: 2,
-                });
+                message.success("Đăng nhập thành công");
                 navigate(callback ? callback : "/");
             } else {
                 notification.error({

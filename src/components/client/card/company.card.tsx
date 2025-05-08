@@ -1,7 +1,7 @@
 import { callFetchCompany } from "@/config/api";
 import { convertSlug } from "@/config/utils";
 import { ICompany } from "@/types/backend";
-import { Badge, Col, Empty, Pagination, Row, Spin } from "antd";
+import { Badge, Col, Empty, Pagination, Row, Skeleton } from "antd";
 import { useState, useEffect } from "react";
 import { isMobile } from "react-device-detect";
 import { Link, useNavigate } from "react-router-dom";
@@ -44,7 +44,7 @@ const CompanyCard = (props: IProps) => {
         const res = await callFetchCompany(query);
         if (res && res.data) {
             setDisplayCompany(res.data.result);
-            setTotal(res.data.meta.totalItems);
+            setTotal(res.data.meta.total);
         }
         setIsLoading(false);
     };
@@ -71,25 +71,61 @@ const CompanyCard = (props: IProps) => {
 
     return (
         <div className={styles["company-content"]}>
-            <Spin spinning={isLoading} tip="Loading...">
-                <Row gutter={[20, 20]}>
-                    <Col span={24}>
-                        <div
-                            className={
-                                isMobile
-                                    ? styles["dflex-mobile"]
-                                    : styles["dflex-pc"]
-                            }
-                        >
-                            <span className={styles["title"]}>
-                                Nhà Tuyển Dụng Hàng Đầu
-                            </span>
-                            {!showPagination && (
-                                <Link to="company">Xem tất cả</Link>
-                            )}
-                        </div>
-                    </Col>
+            {!showPagination && (
+                <Col span={24}>
+                    <div
+                        style={{ margin: "30px 0" }}
+                        className={
+                            isMobile
+                                ? styles["dflex-mobile"]
+                                : styles["dflex-pc"]
+                        }
+                    >
+                        <span className={styles["title"]}>
+                            Nhà Tuyển Dụng Hàng Đầu
+                        </span>
+                        <Link to="company">Xem tất cả</Link>
+                    </div>
+                </Col>
+            )}
 
+            {isLoading ? (
+                <Row gutter={[20, 20]}>
+                    {Array.from({ length: pageSize }).map((_, index) => (
+                        <Col span={24} md={6} key={index}>
+                            <div
+                                style={{
+                                    padding: "20px",
+                                    border: "1px solid #dedede",
+                                    borderRadius: 8,
+                                }}
+                            >
+                                <Skeleton.Image
+                                    active
+                                    style={{
+                                        width: 140,
+                                        height: 140,
+                                        margin: "0 auto 20px",
+                                    }}
+                                />
+                                <Skeleton.Input
+                                    active
+                                    block
+                                    style={{ height: 32 }}
+                                />
+                                <div style={{ marginTop: 20 }}>
+                                    <Skeleton.Input
+                                        active
+                                        block
+                                        style={{ height: 24 }}
+                                    />
+                                </div>
+                            </div>
+                        </Col>
+                    ))}
+                </Row>
+            ) : (
+                <Row gutter={[20, 20]}>
                     {displayCompany?.map((item) => {
                         return (
                             <Col span={24} md={6} key={item._id}>
@@ -186,7 +222,6 @@ const CompanyCard = (props: IProps) => {
                             </Col>
                         );
                     })}
-
                     {(!displayCompany ||
                         (displayCompany && displayCompany.length === 0)) &&
                         !isLoading && (
@@ -195,31 +230,30 @@ const CompanyCard = (props: IProps) => {
                             </div>
                         )}
                 </Row>
-                {showPagination && (
-                    <>
-                        <div style={{ marginTop: 30 }}></div>
-                        <Row
-                            style={{
-                                display: "flex",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Pagination
-                                current={current}
-                                total={total}
-                                pageSize={pageSize}
-                                responsive
-                                onChange={(p: number, s: number) =>
-                                    handleOnchangePage({
-                                        current: p,
-                                        pageSize: s,
-                                    })
-                                }
-                            />
-                        </Row>
-                    </>
-                )}
-            </Spin>
+            )}
+
+            {showPagination && !isLoading && (
+                <Row
+                    style={{
+                        marginTop: 30,
+                        display: "flex",
+                        justifyContent: "center",
+                    }}
+                >
+                    <Pagination
+                        current={current}
+                        total={total}
+                        pageSize={pageSize}
+                        responsive
+                        onChange={(p: number, s: number) =>
+                            handleOnchangePage({
+                                current: p,
+                                pageSize: s,
+                            })
+                        }
+                    />
+                </Row>
+            )}
         </div>
     );
 };

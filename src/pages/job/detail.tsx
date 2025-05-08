@@ -12,11 +12,9 @@ import {
 } from "@ant-design/icons";
 import { getLocationName } from "@/config/utils";
 import ApplyModal from "@/components/client/modal/apply.modal";
-
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
-
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
 
@@ -49,7 +47,74 @@ const ClientJobDetailPage = (props: any) => {
             className={`${styles["container"]} ${styles["detail-job-section"]}`}
         >
             {isLoading ? (
-                <Skeleton />
+                <Row gutter={[20, 20]} style={{ marginTop: 20 }}>
+                    <Col span={24} md={16}>
+                        <Skeleton.Input
+                            active
+                            block
+                            style={{ height: 40, marginBottom: 20 }}
+                        />
+
+                        <Skeleton.Button
+                            active
+                            style={{
+                                width: 120,
+                                height: 40,
+                                marginBottom: 20,
+                            }}
+                        />
+
+                        <Divider />
+
+                        <div style={{ marginBottom: 20 }}>
+                            {Array.from({ length: 3 }).map((_, index) => (
+                                <Skeleton.Button
+                                    active
+                                    size="small"
+                                    style={{
+                                        marginRight: 8,
+                                        marginBottom: 8,
+                                    }}
+                                    key={index}
+                                />
+                            ))}
+                        </div>
+
+                        <Skeleton.Input
+                            active
+                            style={{ width: "30%", marginBottom: 12 }}
+                        />
+                        <Skeleton.Input
+                            active
+                            style={{ width: "40%", marginBottom: 12 }}
+                        />
+                        <Skeleton.Input
+                            active
+                            style={{ width: "60%", marginBottom: 20 }}
+                        />
+
+                        <Divider />
+
+                        <Skeleton active paragraph={{ rows: 12 }} />
+                    </Col>
+
+                    <Col span={24} md={8}>
+                        <div
+                            className={styles["company"]}
+                            style={{ textAlign: "center" }}
+                        >
+                            <Skeleton.Image
+                                active
+                                style={{
+                                    width: 200,
+                                    height: 200,
+                                    marginBottom: 20,
+                                }}
+                            />
+                            <Skeleton.Input active style={{ width: "60%" }} />
+                        </div>
+                    </Col>
+                </Row>
             ) : (
                 <Row gutter={[20, 20]}>
                     {jobDetail && jobDetail._id && (

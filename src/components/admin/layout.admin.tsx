@@ -8,12 +8,10 @@ import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     AliwangwangOutlined,
-    LogoutOutlined,
-    HeartTwoTone,
     BugOutlined,
     ScheduleOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Dropdown, Space, message, Avatar, Button } from "antd";
+import { Layout, Menu, Dropdown, Space, Avatar, Button } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { callLogout } from "config/api";
@@ -23,7 +21,7 @@ import type { MenuProps } from "antd";
 import { setLogoutAction } from "@/redux/slice/accountSlide";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 
-const { Content, Footer, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 const LayoutAdmin = () => {
     const location = useLocation();
@@ -159,24 +157,10 @@ const LayoutAdmin = () => {
     }, [location]);
 
     const handleLogout = async () => {
-        const res = await callLogout();
-        if (res && res.data) {
-            dispatch(setLogoutAction({}));
-            message.success("Đăng xuất thành công");
-            navigate("/");
-        }
+        await callLogout();
+        navigate("/");
+        dispatch(setLogoutAction({}));
     };
-
-    // if (isMobile) {
-    //     items.push({
-    //         label: <label
-    //             style={{ cursor: 'pointer' }}
-    //             onClick={() => handleLogout()}
-    //         >Đăng xuất</label>,
-    //         key: 'logout',
-    //         icon: <LogoutOutlined />
-    //     })
-    // }
 
     const itemsDropdown = [
         {
@@ -263,12 +247,10 @@ const LayoutAdmin = () => {
                                 trigger={["click"]}
                             >
                                 <Space style={{ cursor: "pointer" }}>
-                                    Welcome {user?.name}
                                     <Avatar>
-                                        {" "}
                                         {user?.name
                                             ?.substring(0, 2)
-                                            ?.toUpperCase()}{" "}
+                                            ?.toUpperCase()}
                                     </Avatar>
                                 </Space>
                             </Dropdown>

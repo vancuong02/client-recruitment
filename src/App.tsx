@@ -4,7 +4,7 @@ import {
     RouterProvider,
     useLocation,
 } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import NotFound from "components/share/not.found";
 import LoginPage from "pages/auth/login";
 import RegisterPage from "pages/auth/register";
@@ -30,16 +30,17 @@ import ClientCompanyDetailPage from "./pages/company/detail";
 
 const LayoutClient = () => {
     const location = useLocation();
-    const rootRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (rootRef && rootRef.current) {
-            rootRef.current.scrollIntoView({ behavior: "smooth" });
-        }
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "smooth",
+        });
     }, [location]);
 
     return (
-        <div className="layout-app" ref={rootRef}>
+        <div className="layout-app">
             <Header />
             <div className={styles["content-app"]}>
                 <Outlet />

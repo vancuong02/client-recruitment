@@ -9,8 +9,8 @@ export interface IModelPaginate<T> {
     meta: {
         current: number;
         pageSize: number;
-        totalPages: number;
-        totalItems: number;
+        pages: number;
+        total: number;
     };
     result: T[];
 }
@@ -164,4 +164,11 @@ export interface ISubscribers {
     deletedAt?: boolean | null;
     createdAt?: string;
     updatedAt?: string;
+}
+
+export interface IBodyUpdateUser {
+    name?: string;
+    age?: number;
+    gender?: string;
+    address?: string;
 }
