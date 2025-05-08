@@ -7,7 +7,7 @@ export interface IBackendRes<T> {
 
 export interface IModelPaginate<T> {
     meta: {
-        currentPage: number;
+        current: number;
         pageSize: number;
         totalPages: number;
         totalItems: number;
@@ -105,19 +105,15 @@ export interface IResume {
     userId: string;
     url: string;
     status: string;
-    companyId:
-        | string
-        | {
-              _id: string;
-              name: string;
-              logo: string;
-          };
-    jobId:
-        | string
-        | {
-              _id: string;
-              name: string;
-          };
+    companyId: {
+        _id: string;
+        name: string;
+        logo: string;
+    };
+    jobId: {
+        _id: string;
+        name: string;
+    };
     history?: {
         status: string;
         updatedAt: Date;

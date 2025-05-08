@@ -128,7 +128,7 @@ const Header = () => {
                             </div>
                             <div className={styles["top-menu"]}>
                                 <Menu
-                                    style={{ width: "100%" }}
+                                    style={{ width: "80%" }}
                                     items={items}
                                     mode="horizontal"
                                     selectedKeys={[current]}

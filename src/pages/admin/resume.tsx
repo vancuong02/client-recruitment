@@ -1,14 +1,16 @@
 import DataTable from "@/components/client/data-table";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { IResume } from "@/types/backend";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
-import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components';
-import { Button, Popconfirm, Select, Space, Tag, message, notification } from "antd";
-import { useState, useRef } from 'react';
-import dayjs from 'dayjs';
+import {
+    ActionType,
+    ProColumns,
+    ProFormSelect,
+} from "@ant-design/pro-components";
+import { message, notification } from "antd";
+import { useState, useRef } from "react";
+import dayjs from "dayjs";
 import { callDeleteResume } from "@/config/api";
-import queryString from 'query-string';
-import { useNavigate } from "react-router-dom";
+import queryString from "query-string";
 import { fetchResume } from "@/redux/slice/resumeSlide";
 import ViewDetailResume from "@/components/admin/resume/view.resume";
 import { ALL_PERMISSIONS } from "@/config/permissions";
@@ -17,10 +19,11 @@ import Access from "@/components/share/access";
 const ResumePage = () => {
     const tableRef = useRef<ActionType>();
 
-    const isFetching = useAppSelector(state => state.resume.isFetching);
-    const meta = useAppSelector(state => state.resume.meta);
-    const resumes = useAppSelector(state => state.resume.result);
+    const isFetching = useAppSelector((state) => state.resume.isFetching);
+    const meta = useAppSelector((state) => state.resume.meta);
+    const resumes = useAppSelector((state) => state.resume.result);
     const dispatch = useAppDispatch();
+    console.log("resumes: ", resumes);
 
     const [dataInit, setDataInit] = useState<IResume | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
@@ -29,41 +32,44 @@ const ResumePage = () => {
         if (_id) {
             const res = await callDeleteResume(_id);
             if (res && res.data) {
-                message.success('Xóa Resume thành công');
+                message.success("Xóa Resume thành công");
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
-                    description: res.message
+                    message: "Có lỗi xảy ra",
+                    description: res.message,
                 });
             }
         }
-    }
+    };
 
     const reloadTable = () => {
         tableRef?.current?.reload();
-    }
+    };
 
     const columns: ProColumns<IResume>[] = [
         {
-            title: 'Id',
-            dataIndex: '_id',
+            title: "Id",
+            dataIndex: "_id",
             width: 250,
             render: (text, record, index, action) => {
                 return (
-                    <a href="#" onClick={() => {
-                        setOpenViewDetail(true);
-                        setDataInit(record);
-                    }}>
+                    <a
+                        href="#"
+                        onClick={() => {
+                            setOpenViewDetail(true);
+                            setDataInit(record);
+                        }}
+                    >
                         {record._id}
                     </a>
-                )
+                );
             },
             hideInSearch: true,
         },
         {
-            title: 'Trạng Thái',
-            dataIndex: 'status',
+            title: "Trạng Thái",
+            dataIndex: "status",
             sorter: true,
             renderFormItem: (item, props, form) => (
                 <ProFormSelect
@@ -71,10 +77,10 @@ const ResumePage = () => {
                     mode="multiple"
                     allowClear
                     valueEnum={{
-                        PENDING: 'PENDING',
-                        REVIEWING: 'REVIEWING',
-                        APPROVED: 'APPROVED',
-                        REJECTED: 'REJECTED',
+                        PENDING: "PENDING",
+                        REVIEWING: "REVIEWING",
+                        APPROVED: "APPROVED",
+                        REJECTED: "REJECTED",
                     }}
                     placeholder="Chọn level"
                 />
@@ -82,37 +88,43 @@ const ResumePage = () => {
         },
 
         {
-            title: 'Job',
-            dataIndex: ["jobId", "name"],
+            title: "Job",
+            dataIndex: ["jobId"],
             hideInSearch: true,
+            render: (text, record, index, action) => {
+                return <>{record.jobId.name}</>;
+            },
         },
         {
-            title: 'Company',
-            dataIndex: ["companyId", "name"],
+            title: "Company",
+            dataIndex: ["companyId"],
             hideInSearch: true,
+            render: (text, record, index, action) => {
+                return <>{record.companyId.name}</>;
+            },
         },
 
         {
-            title: 'CreatedAt',
-            dataIndex: 'createdAt',
+            title: "CreatedAt",
+            dataIndex: "createdAt",
             width: 200,
             sorter: true,
             render: (text, record, index, action) => {
                 return (
-                    <>{dayjs(record.createdAt).format('DD-MM-YYYY HH:mm:ss')}</>
-                )
+                    <>{dayjs(record.createdAt).format("DD-MM-YYYY HH:mm:ss")}</>
+                );
             },
             hideInSearch: true,
         },
         {
-            title: 'UpdatedAt',
-            dataIndex: 'updatedAt',
+            title: "UpdatedAt",
+            dataIndex: "updatedAt",
             width: 200,
             sorter: true,
             render: (text, record, index, action) => {
                 return (
-                    <>{dayjs(record.updatedAt).format('DD-MM-YYYY HH:mm:ss')}</>
-                )
+                    <>{dayjs(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</>
+                );
             },
             hideInSearch: true,
         },
@@ -169,14 +181,20 @@ const ResumePage = () => {
 
         let sortBy = "";
         if (sort && sort.status) {
-            sortBy = sort.status === 'ascend' ? "sort=status" : "sort=-status";
+            sortBy = sort.status === "ascend" ? "sort=status" : "sort=-status";
         }
 
         if (sort && sort.createdAt) {
-            sortBy = sort.createdAt === 'ascend' ? "sort=createdAt" : "sort=-createdAt";
+            sortBy =
+                sort.createdAt === "ascend"
+                    ? "sort=createdAt"
+                    : "sort=-createdAt";
         }
         if (sort && sort.updatedAt) {
-            sortBy = sort.updatedAt === 'ascend' ? "sort=updatedAt" : "sort=-updatedAt";
+            sortBy =
+                sort.updatedAt === "ascend"
+                    ? "sort=updatedAt"
+                    : "sort=-updatedAt";
         }
 
         //mặc định sort theo updatedAt
@@ -186,15 +204,14 @@ const ResumePage = () => {
             temp = `${temp}&${sortBy}`;
         }
 
-        temp += "&populate=companyId,jobId&fields=companyId._id, companyId.name, companyId.logo, jobId._id, jobId.name";
+        temp +=
+            "&populate=companyId,jobId&fields=companyId._id, companyId.name, companyId.logo, jobId._id, jobId.name";
         return temp;
-    }
+    };
 
     return (
         <div>
-            <Access
-                permission={ALL_PERMISSIONS.RESUMES.GET_PAGINATE}
-            >
+            <Access permission={ALL_PERMISSIONS.RESUMES.GET_PAGINATE}>
                 <DataTable<IResume>
                     actionRef={tableRef}
                     headerTitle="Danh sách Resumes"
@@ -204,23 +221,26 @@ const ResumePage = () => {
                     dataSource={resumes}
                     request={async (params, sort, filter): Promise<any> => {
                         const query = buildQuery(params, sort, filter);
-                        dispatch(fetchResume({ query }))
+                        dispatch(fetchResume({ query }));
                     }}
                     scroll={{ x: true }}
-                    pagination={
-                        {
-                            current: meta.current,
-                            pageSize: meta.pageSize,
-                            showSizeChanger: true,
-                            total: meta.total,
-                            showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
-                        }
-                    }
+                    pagination={{
+                        current: meta.current,
+                        pageSize: meta.pageSize,
+                        showSizeChanger: true,
+                        total: meta.total,
+                        showTotal: (total, range) => {
+                            return (
+                                <div>
+                                    {" "}
+                                    {range[0]}-{range[1]} trên {total} rows
+                                </div>
+                            );
+                        },
+                    }}
                     rowSelection={false}
                     toolBarRender={(_action, _rows): any => {
-                        return (
-                            <></>
-                        );
+                        return <></>;
                     }}
                 />
             </Access>
@@ -232,7 +252,7 @@ const ResumePage = () => {
                 reloadTable={reloadTable}
             />
         </div>
-    )
-}
+    );
+};
 
 export default ResumePage;

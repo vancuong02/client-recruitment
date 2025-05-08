@@ -75,8 +75,6 @@ const JobCard = (props: IProps) => {
         navigate(`/job/${slug}?id=${item._id}`);
     };
 
-    console.log("total", total);
-
     return (
         <div className={`${styles["card-job-section"]}`}>
             <div className={`${styles["job-content"]}`}>
