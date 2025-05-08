@@ -1,15 +1,38 @@
-import { CheckSquareOutlined, LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { FooterToolbar, ModalForm, ProCard, ProFormText, ProFormTextArea } from "@ant-design/pro-components";
-import { Col, ConfigProvider, Form, Modal, Row, Upload, message, notification } from "antd";
-import 'styles/reset.scss';
-import { isMobile } from 'react-device-detect';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import {
+    CheckSquareOutlined,
+    LoadingOutlined,
+    PlusOutlined,
+} from "@ant-design/icons";
+import {
+    FooterToolbar,
+    ModalForm,
+    ProCard,
+    ProFormText,
+    ProFormTextArea,
+} from "@ant-design/pro-components";
+import {
+    Col,
+    ConfigProvider,
+    Form,
+    Modal,
+    Row,
+    Upload,
+    message,
+    notification,
+} from "antd";
+import "styles/reset.scss";
+import { isMobile } from "react-device-detect";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
-import { callCreateCompany, callUpdateCompany, callUploadSingleFile } from "@/config/api";
+import {
+    callCreateCompany,
+    callUpdateCompany,
+    callUploadSingleFile,
+} from "@/config/api";
 import { ICompany } from "@/types/backend";
-import { v4 as uuidv4 } from 'uuid';
-import enUS from 'antd/lib/locale/en_US';
+import { v4 as uuidv4 } from "uuid";
+import enUS from "antd/lib/locale/en_US";
 
 interface IProps {
     openModal: boolean;
@@ -21,7 +44,7 @@ interface IProps {
 
 interface ICompanyForm {
     name: string;
-    address: string;
+    location: string;
 }
 
 interface ICompanyLogo {
@@ -30,16 +53,17 @@ interface ICompanyLogo {
 }
 
 const ModalCompany = (props: IProps) => {
-    const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } = props;
+    const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } =
+        props;
 
     //modal animation
-    const [animation, setAnimation] = useState<string>('open');
+    const [animation, setAnimation] = useState<string>("open");
 
     const [loadingUpload, setLoadingUpload] = useState<boolean>(false);
     const [dataLogo, setDataLogo] = useState<ICompanyLogo[]>([]);
     const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
-    const [previewTitle, setPreviewTitle] = useState('');
+    const [previewImage, setPreviewImage] = useState("");
+    const [previewTitle, setPreviewTitle] = useState("");
 
     const [value, setValue] = useState<string>("");
     const [form] = Form.useForm();
@@ -48,44 +72,55 @@ const ModalCompany = (props: IProps) => {
         if (dataInit?._id && dataInit?.description) {
             setValue(dataInit.description);
         }
-    }, [dataInit])
+    }, [dataInit]);
 
     const submitCompany = async (valuesForm: ICompanyForm) => {
-        const { name, address } = valuesForm;
+        const { name, location } = valuesForm;
 
         if (dataLogo.length === 0) {
-            message.error('Vui lòng upload ảnh Logo')
+            message.error("Vui lòng upload ảnh Logo");
             return;
         }
 
         if (dataInit?._id) {
             //update
-            const res = await callUpdateCompany(dataInit._id, name, address, value, dataLogo[0].name);
+            const res = await callUpdateCompany(
+                dataInit._id,
+                name,
+                location,
+                value,
+                dataLogo[0].name
+            );
             if (res.data) {
                 message.success("Cập nhật company thành công");
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
-                    description: res.message
+                    message: "Có lỗi xảy ra",
+                    description: res.message,
                 });
             }
         } else {
             //create
-            const res = await callCreateCompany(name, address, value, dataLogo[0].name);
+            const res = await callCreateCompany(
+                name,
+                location,
+                value,
+                dataLogo[0].name
+            );
             if (res.data) {
                 message.success("Thêm mới company thành công");
                 handleReset();
                 reloadTable();
             } else {
                 notification.error({
-                    message: 'Có lỗi xảy ra',
-                    description: res.message
+                    message: "Có lỗi xảy ra",
+                    description: res.message,
                 });
             }
         }
-    }
+    };
 
     const handleReset = async () => {
         form.resetFields();
@@ -93,88 +128,105 @@ const ModalCompany = (props: IProps) => {
         setDataInit(null);
 
         //add animation when closing modal
-        setAnimation('close')
-        await new Promise(r => setTimeout(r, 400))
+        setAnimation("close");
+        await new Promise((r) => setTimeout(r, 400));
         setOpenModal(false);
-        setAnimation('open')
-    }
+        setAnimation("open");
+    };
 
     const handleRemoveFile = (file: any) => {
-        setDataLogo([])
-    }
+        setDataLogo([]);
+    };
 
     const handlePreview = async (file: any) => {
         if (!file.originFileObj) {
             setPreviewImage(file.url);
             setPreviewOpen(true);
-            setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+            setPreviewTitle(
+                file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+            );
             return;
         }
         getBase64(file.originFileObj, (url: string) => {
             setPreviewImage(url);
             setPreviewOpen(true);
-            setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+            setPreviewTitle(
+                file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
+            );
         });
     };
 
     const getBase64 = (img: any, callback: any) => {
         const reader = new FileReader();
-        reader.addEventListener('load', () => callback(reader.result));
+        reader.addEventListener("load", () => callback(reader.result));
         reader.readAsDataURL(img);
     };
 
     const beforeUpload = (file: any) => {
-        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        const isJpgOrPng =
+            file.type === "image/jpeg" || file.type === "image/png";
         if (!isJpgOrPng) {
-            message.error('You can only upload JPG/PNG file!');
+            message.error("You can only upload JPG/PNG file!");
         }
         const isLt2M = file.size / 1024 / 1024 < 2;
         if (!isLt2M) {
-            message.error('Image must smaller than 2MB!');
+            message.error("Image must smaller than 2MB!");
         }
         return isJpgOrPng && isLt2M;
     };
 
     const handleChange = (info: any) => {
-        if (info.file.status === 'uploading') {
+        if (info.file.status === "uploading") {
             setLoadingUpload(true);
         }
-        if (info.file.status === 'done') {
+        if (info.file.status === "done") {
             setLoadingUpload(false);
         }
-        if (info.file.status === 'error') {
+        if (info.file.status === "error") {
             setLoadingUpload(false);
-            message.error(info?.file?.error?.event?.message ?? "Đã có lỗi xảy ra khi upload file.")
+            message.error(
+                info?.file?.error?.event?.message ??
+                    "Đã có lỗi xảy ra khi upload file."
+            );
         }
     };
 
     const handleUploadFileLogo = async ({ file, onSuccess, onError }: any) => {
         const res = await callUploadSingleFile(file, "company");
         if (res && res.data) {
-            setDataLogo([{
-                name: res.data.fileName,
-                uid: uuidv4()
-            }])
-            if (onSuccess) onSuccess('ok')
+            setDataLogo([
+                {
+                    name: res.data.fileUrl,
+                    uid: uuidv4(),
+                },
+            ]);
+            if (onSuccess) onSuccess("ok");
         } else {
             if (onError) {
-                setDataLogo([])
+                setDataLogo([]);
                 const error = new Error(res.message);
                 onError({ event: error });
             }
         }
     };
 
-
     return (
         <>
-            {openModal &&
+            {openModal && (
                 <>
                     <ModalForm
-                        title={<>{dataInit?._id ? "Cập nhật Company" : "Tạo mới Company"}</>}
+                        title={
+                            <>
+                                {dataInit?._id
+                                    ? "Cập nhật Company"
+                                    : "Tạo mới Company"}
+                            </>
+                        }
                         open={openModal}
                         modalProps={{
-                            onCancel: () => { handleReset() },
+                            onCancel: () => {
+                                handleReset();
+                            },
                             afterClose: () => handleReset(),
                             destroyOnClose: true,
                             width: isMobile ? "100%" : 900,
@@ -182,7 +234,7 @@ const ModalCompany = (props: IProps) => {
                             keyboard: false,
                             maskClosable: false,
                             className: `modal-company ${animation}`,
-                            rootClassName: `modal-company-root ${animation}`
+                            rootClassName: `modal-company-root ${animation}`,
                         }}
                         scrollToFirstError={true}
                         preserve={false}
@@ -190,14 +242,20 @@ const ModalCompany = (props: IProps) => {
                         onFinish={submitCompany}
                         initialValues={dataInit?._id ? dataInit : {}}
                         submitter={{
-                            render: (_: any, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
+                            render: (_: any, dom: any) => (
+                                <FooterToolbar>{dom}</FooterToolbar>
+                            ),
                             submitButtonProps: {
-                                icon: <CheckSquareOutlined />
+                                icon: <CheckSquareOutlined />,
                             },
                             searchConfig: {
                                 resetText: "Hủy",
-                                submitText: <>{dataInit?._id ? "Cập nhật" : "Tạo mới"}</>,
-                            }
+                                submitText: (
+                                    <>
+                                        {dataInit?._id ? "Cập nhật" : "Tạo mới"}
+                                    </>
+                                ),
+                            },
                         }}
                     >
                         <Row gutter={16}>
@@ -205,7 +263,12 @@ const ModalCompany = (props: IProps) => {
                                 <ProFormText
                                     label="Tên công ty"
                                     name="name"
-                                    rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Vui lòng không bỏ trống",
+                                        },
+                                    ]}
                                     placeholder="Nhập tên công ty"
                                 />
                             </Col>
@@ -214,14 +277,20 @@ const ModalCompany = (props: IProps) => {
                                     labelCol={{ span: 24 }}
                                     label="Ảnh Logo"
                                     name="logo"
-                                    rules={[{
-                                        required: true,
-                                        message: 'Vui lòng không bỏ trống',
-                                        validator: () => {
-                                            if (dataLogo.length > 0) return Promise.resolve();
-                                            else return Promise.reject(false);
-                                        }
-                                    }]}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Vui lòng không bỏ trống",
+                                            validator: () => {
+                                                if (dataLogo.length > 0)
+                                                    return Promise.resolve();
+                                                else
+                                                    return Promise.reject(
+                                                        false
+                                                    );
+                                            },
+                                        },
+                                    ]}
                                 >
                                     <ConfigProvider locale={enUS}>
                                         <Upload
@@ -233,39 +302,53 @@ const ModalCompany = (props: IProps) => {
                                             customRequest={handleUploadFileLogo}
                                             beforeUpload={beforeUpload}
                                             onChange={handleChange}
-                                            onRemove={(file) => handleRemoveFile(file)}
+                                            onRemove={(file) =>
+                                                handleRemoveFile(file)
+                                            }
                                             onPreview={handlePreview}
                                             defaultFileList={
-                                                dataInit?._id ?
-                                                    [
-                                                        {
-                                                            uid: uuidv4(),
-                                                            name: dataInit?.logo ?? "",
-                                                            status: 'done',
-                                                            url: `${import.meta.env.VITE_BACKEND_URL}/images/company/${dataInit?.logo}`,
-                                                        }
-                                                    ] : []
+                                                dataInit?._id
+                                                    ? [
+                                                          {
+                                                              uid: uuidv4(),
+                                                              name:
+                                                                  dataInit?.logo ??
+                                                                  "",
+                                                              status: "done",
+                                                              url: `${dataInit?.logo}`,
+                                                          },
+                                                      ]
+                                                    : []
                                             }
-
                                         >
                                             <div>
-                                                {loadingUpload ? <LoadingOutlined /> : <PlusOutlined />}
-                                                <div style={{ marginTop: 8 }}>Upload</div>
+                                                {loadingUpload ? (
+                                                    <LoadingOutlined />
+                                                ) : (
+                                                    <PlusOutlined />
+                                                )}
+                                                <div style={{ marginTop: 8 }}>
+                                                    Upload
+                                                </div>
                                             </div>
                                         </Upload>
                                     </ConfigProvider>
                                 </Form.Item>
-
                             </Col>
 
                             <Col span={16}>
                                 <ProFormTextArea
                                     label="Địa chỉ"
-                                    name="address"
-                                    rules={[{ required: true, message: 'Vui lòng không bỏ trống' }]}
+                                    name="location"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Vui lòng không bỏ trống",
+                                        },
+                                    ]}
                                     placeholder="Nhập địa chỉ công ty"
                                     fieldProps={{
-                                        autoSize: { minRows: 4 }
+                                        autoSize: { minRows: 4 },
                                     }}
                                 />
                             </Col>
@@ -273,7 +356,7 @@ const ModalCompany = (props: IProps) => {
                             <ProCard
                                 title="Miêu tả"
                                 // subTitle="mô tả công ty"
-                                headStyle={{ color: '#d81921' }}
+                                headStyle={{ color: "#d81921" }}
                                 style={{ marginBottom: 20 }}
                                 headerBordered
                                 size="small"
@@ -296,12 +379,16 @@ const ModalCompany = (props: IProps) => {
                         onCancel={() => setPreviewOpen(false)}
                         style={{ zIndex: 1500 }}
                     >
-                        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                        <img
+                            alt="example"
+                            style={{ width: "100%" }}
+                            src={previewImage}
+                        />
                     </Modal>
                 </>
-            }
+            )}
         </>
-    )
-}
+    );
+};
 
 export default ModalCompany;

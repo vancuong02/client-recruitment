@@ -155,7 +155,8 @@ const ClientJobDetailPage = (props: any) => {
                                     <EnvironmentOutlined
                                         style={{ color: "#58aaab" }}
                                     />
-                                    &nbsp;{getLocationName(jobDetail.location)}
+                                    &nbsp;
+                                    {getLocationName(jobDetail.locations[0])}
                                 </div>
                                 <div>
                                     <div style={{ fontWeight: 500 }}>
@@ -183,10 +184,10 @@ const ClientJobDetailPage = (props: any) => {
                                     <div>
                                         <img
                                             alt="example"
-                                            src={jobDetail.company?.logo}
+                                            src={jobDetail.companyId?.logo}
                                         />
                                     </div>
-                                    <div>{jobDetail.company?.name}</div>
+                                    <div>{jobDetail.companyId?.name}</div>
                                 </div>
                             </Col>
                         </>

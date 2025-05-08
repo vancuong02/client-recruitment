@@ -11,6 +11,7 @@ import {
     IRole,
     ISubscribers,
     IBodyUpdateUser,
+    IBodyJobRes,
 } from "@/types/backend";
 import axios from "config/axios-customize";
 
@@ -74,13 +75,13 @@ Module Company
  */
 export const callCreateCompany = (
     name: string,
-    address: string,
+    location: string,
     description: string,
     logo: string
 ) => {
     return axios.post<IBackendRes<ICompany>>("/api/v1/companies", {
         name,
-        address,
+        location,
         description,
         logo,
     });
@@ -89,13 +90,13 @@ export const callCreateCompany = (
 export const callUpdateCompany = (
     id: string,
     name: string,
-    address: string,
+    location: string,
     description: string,
     logo: string
 ) => {
     return axios.patch<IBackendRes<ICompany>>(`/api/v1/companies/${id}`, {
         name,
-        address,
+        location,
         description,
         logo,
     });
@@ -157,11 +158,11 @@ export const callChangePassword = (body: {
  *
 Module Job
  */
-export const callCreateJob = (job: IJob) => {
+export const callCreateJob = (job: IBodyJobRes) => {
     return axios.post<IBackendRes<IJob>>("/api/v1/jobs", { ...job });
 };
 
-export const callUpdateJob = (job: IJob, id: string) => {
+export const callUpdateJob = (job: IBodyJobRes, id: string) => {
     return axios.patch<IBackendRes<IJob>>(`/api/v1/jobs/${id}`, { ...job });
 };
 

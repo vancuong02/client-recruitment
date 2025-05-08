@@ -183,7 +183,7 @@ const JobCard = (props: IProps) => {
                                                         width: "100%",
                                                     }}
                                                     alt="example"
-                                                    src={item?.company?.logo}
+                                                    src={item?.companyId?.logo}
                                                 />
                                             </div>
                                             <div
@@ -210,7 +210,7 @@ const JobCard = (props: IProps) => {
                                                     />
                                                     &nbsp;
                                                     {getLocationName(
-                                                        item.location
+                                                        item.locations[0]
                                                     )}
                                                 </div>
                                                 <div>
@@ -220,13 +220,7 @@ const JobCard = (props: IProps) => {
                                                         }}
                                                     />
                                                     &nbsp;
-                                                    {(
-                                                        item.salary + ""
-                                                    )?.replace(
-                                                        /\B(?=(\d{3})+(?!\d))/g,
-                                                        ","
-                                                    )}{" "}
-                                                    đ
+                                                    {item.salary}
                                                 </div>
                                                 <div
                                                     className={

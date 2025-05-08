@@ -1,38 +1,30 @@
-import DataTable from "@/components/client/data-table";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { IJob } from "@/types/backend";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import {
     ActionType,
     ProColumns,
     ProFormSelect,
 } from "@ant-design/pro-components";
-import {
-    Button,
-    Popconfirm,
-    Select,
-    Space,
-    Tag,
-    message,
-    notification,
-} from "antd";
-import { useState, useRef } from "react";
 import dayjs from "dayjs";
-import { callDeleteJob } from "@/config/api";
+import { useRef } from "react";
 import queryString from "query-string";
 import { useNavigate } from "react-router-dom";
-import { fetchJob } from "@/redux/slice/jobSlide";
+import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+
+import { IJob } from "@/types/backend";
+import { callDeleteJob } from "@/config/api";
 import Access from "@/components/share/access";
+import { fetchJob } from "@/redux/slice/jobSlide";
 import { ALL_PERMISSIONS } from "@/config/permissions";
+import DataTable from "@/components/client/data-table";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 
 const JobPage = () => {
     const tableRef = useRef<ActionType>();
-
-    const isFetching = useAppSelector((state) => state.job.isFetching);
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const meta = useAppSelector((state) => state.job.meta);
     const jobs = useAppSelector((state) => state.job.result);
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
+    const isFetching = useAppSelector((state) => state.job.isFetching);
 
     const handleDeleteJob = async (_id: string | undefined) => {
         if (_id) {
