@@ -22,9 +22,8 @@ import {
 } from "antd";
 import "styles/reset.scss";
 import { isMobile } from "react-device-detect";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { useEffect, useState } from "react";
+import { Editor } from "@tinymce/tinymce-react";
+import { useEffect, useRef, useState } from "react";
 import {
     callCreateCompany,
     callUpdateCompany,
@@ -53,9 +52,10 @@ interface ICompanyLogo {
 }
 
 const ModalCompany = (props: IProps) => {
+    const editorRef = useRef(null);
+
     const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } =
         props;
-
     //modal animation
     const [animation, setAnimation] = useState<string>("open");
 
@@ -76,11 +76,8 @@ const ModalCompany = (props: IProps) => {
 
     const submitCompany = async (valuesForm: ICompanyForm) => {
         const { name, location } = valuesForm;
-
-        if (dataLogo.length === 0) {
-            message.error("Vui lòng upload ảnh Logo");
-            return;
-        }
+        const logoUrl =
+            dataLogo.length > 0 ? dataLogo[0].name : dataInit?.logo ?? "";
 
         if (dataInit?._id) {
             //update
@@ -89,10 +86,10 @@ const ModalCompany = (props: IProps) => {
                 name,
                 location,
                 value,
-                dataLogo[0].name
+                logoUrl
             );
             if (res.data) {
-                message.success("Cập nhật company thành công");
+                message.success(res.message);
                 handleReset();
                 reloadTable();
             } else {
@@ -103,14 +100,9 @@ const ModalCompany = (props: IProps) => {
             }
         } else {
             //create
-            const res = await callCreateCompany(
-                name,
-                location,
-                value,
-                dataLogo[0].name
-            );
+            const res = await callCreateCompany(name, location, value, logoUrl);
             if (res.data) {
-                message.success("Thêm mới company thành công");
+                message.success(res.message);
                 handleReset();
                 reloadTable();
             } else {
@@ -164,11 +156,15 @@ const ModalCompany = (props: IProps) => {
 
     const beforeUpload = (file: any) => {
         const isJpgOrPng =
-            file.type === "image/jpeg" || file.type === "image/png";
+            file.type === "image/jpeg" ||
+            file.type === "image/png" ||
+            file.type === "image/jpg" ||
+            file.type === "image/gif" ||
+            file.type === "image/webp";
         if (!isJpgOrPng) {
             message.error("You can only upload JPG/PNG file!");
         }
-        const isLt2M = file.size / 1024 / 1024 < 2;
+        const isLt2M = file.size / 1024 / 1024 < 5;
         if (!isLt2M) {
             message.error("Image must smaller than 2MB!");
         }
@@ -282,12 +278,20 @@ const ModalCompany = (props: IProps) => {
                                             required: true,
                                             message: "Vui lòng không bỏ trống",
                                             validator: () => {
-                                                if (dataLogo.length > 0)
+                                                // Kiểm tra nếu đang ở chế độ update và đã có logo từ trước
+                                                if (
+                                                    dataInit?._id &&
+                                                    dataInit?.logo
+                                                ) {
                                                     return Promise.resolve();
-                                                else
-                                                    return Promise.reject(
-                                                        false
-                                                    );
+                                                }
+                                                // Kiểm tra nếu có file mới upload
+                                                if (dataLogo.length > 0) {
+                                                    return Promise.resolve();
+                                                }
+                                                return Promise.reject(
+                                                    "Vui lòng không bỏ trống"
+                                                );
                                             },
                                         },
                                     ]}
@@ -355,20 +359,60 @@ const ModalCompany = (props: IProps) => {
 
                             <ProCard
                                 title="Miêu tả"
-                                // subTitle="mô tả công ty"
                                 headStyle={{ color: "#d81921" }}
                                 style={{ marginBottom: 20 }}
                                 headerBordered
-                                size="small"
+                                size="default"
                                 bordered
                             >
-                                <Col span={24}>
-                                    <ReactQuill
-                                        theme="snow"
-                                        value={value}
-                                        onChange={setValue}
-                                    />
-                                </Col>
+                                <Editor
+                                    apiKey={
+                                        import.meta.env.VITE_API_KEY_TINYMCE
+                                    }
+                                    onEditorChange={(
+                                        content: any,
+                                        editor: any
+                                    ) => {
+                                        setValue(content);
+                                    }}
+                                    onInit={(evt: any, editor: any) =>
+                                        (editorRef.current = editor)
+                                    }
+                                    initialValue={dataInit?.description}
+                                    init={{
+                                        height: 500,
+                                        menubar: false,
+                                        statusbar: false,
+                                        branding: false,
+                                        plugins: [
+                                            "advlist",
+                                            "autolink",
+                                            "lists",
+                                            "link",
+                                            "image",
+                                            "charmap",
+                                            "preview",
+                                            "anchor",
+                                            "searchreplace",
+                                            "visualblocks",
+                                            "code",
+                                            "fullscreen",
+                                            "insertdatetime",
+                                            "media",
+                                            "table",
+                                            "code",
+                                            "help",
+                                            "wordcount",
+                                        ],
+                                        toolbar:
+                                            "undo redo | blocks | " +
+                                            "bold italic forecolor | alignleft aligncenter " +
+                                            "alignright alignjustify | bullist numlist outdent indent | " +
+                                            "removeformat | help",
+                                        content_style:
+                                            "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                                    }}
+                                />
                             </ProCard>
                         </Row>
                     </ModalForm>

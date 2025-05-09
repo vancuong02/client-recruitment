@@ -68,22 +68,24 @@ const JobPage = () => {
         },
         {
             title: "Level",
-            dataIndex: "level",
-            renderFormItem: (item, props, form) => (
-                <ProFormSelect
-                    showSearch
-                    mode="multiple"
-                    allowClear
-                    valueEnum={{
-                        INTERN: "INTERN",
-                        FRESHER: "FRESHER",
-                        JUNIOR: "JUNIOR",
-                        MIDDLE: "MIDDLE",
-                        SENIOR: "SENIOR",
-                    }}
-                    placeholder="Chọn level"
-                />
-            ),
+            dataIndex: "levels",
+            render: (_: any, record: IJob) => {
+                return (
+                    <Space>
+                        {record.levels?.map((item, index) => {
+                            return (
+                                <Tag
+                                    style={{ margin: 0 }}
+                                    color="processing"
+                                    key={index}
+                                >
+                                    {item}
+                                </Tag>
+                            );
+                        })}
+                    </Space>
+                );
+            },
         },
         {
             title: "Trạng thái",
@@ -125,7 +127,7 @@ const JobPage = () => {
             hideInSearch: true,
         },
         {
-            title: "Actions",
+            title: "Chức năng",
             hideInSearch: true,
             width: 50,
             render: (_value, entity, _index, _action) => (

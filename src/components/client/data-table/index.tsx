@@ -2,15 +2,15 @@ import {
     ParamsType,
     ProTable,
     ProTableProps,
-} from '@ant-design/pro-components';
-import vi_VN from 'antd/locale/vi_VN';
-import enUS from 'antd/lib/locale/en_US';
-import { ConfigProvider } from 'antd';
+} from "@ant-design/pro-components";
+import vi_VN from "antd/locale/vi_VN";
+import enUS from "antd/lib/locale/en_US";
+import { ConfigProvider } from "antd";
 
 const DataTable = <
     T extends Record<string, any>,
     U extends ParamsType = ParamsType,
-    ValueType = 'text',
+    ValueType = "text"
 >({
     columns,
     defaultData = [],
@@ -28,7 +28,7 @@ const DataTable = <
     toolBarRender,
     headerTitle,
     actionRef,
-    dateFormatter = 'string',
+    dateFormatter = "string",
     rowSelection,
 }: ProTableProps<T, U, ValueType>) => {
     return (

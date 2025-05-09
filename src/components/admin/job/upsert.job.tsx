@@ -28,26 +28,25 @@ import {
     TYPE_WORK_LIST,
 } from "@/config/utils";
 import { ICompanySelect } from "../user/modal.user";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     callCreateJob,
     callFetchCompany,
     callFetchJobById,
     callUpdateJob,
 } from "@/config/api";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import { CheckSquareOutlined } from "@ant-design/icons";
 import enUS from "antd/lib/locale/en_US";
 import dayjs from "dayjs";
 import { IJob } from "@/types/backend";
+import { Editor } from "@tinymce/tinymce-react";
 
 const ViewUpsertJob = (props: any) => {
     const [companies, setCompanies] = useState<ICompanySelect[]>();
 
     const navigate = useNavigate();
     const [value, setValue] = useState<string>("");
-
+    const editorRef = useRef(null);
     let location = useLocation();
     let params = new URLSearchParams(location.search);
     const id = params?.get("id");
@@ -429,10 +428,52 @@ const ViewUpsertJob = (props: any) => {
                                         },
                                     ]}
                                 >
-                                    <ReactQuill
-                                        theme="snow"
-                                        value={value}
-                                        onChange={setValue}
+                                    <Editor
+                                        apiKey={
+                                            import.meta.env.VITE_API_KEY_TINYMCE
+                                        }
+                                        onEditorChange={(
+                                            content: any,
+                                            editor: any
+                                        ) => {
+                                            setValue(content);
+                                        }}
+                                        onInit={(evt: any, editor: any) =>
+                                            (editorRef.current = editor)
+                                        }
+                                        init={{
+                                            height: 500,
+                                            menubar: false,
+                                            statusbar: false,
+                                            branding: false,
+                                            plugins: [
+                                                "advlist",
+                                                "autolink",
+                                                "lists",
+                                                "link",
+                                                "image",
+                                                "charmap",
+                                                "preview",
+                                                "anchor",
+                                                "searchreplace",
+                                                "visualblocks",
+                                                "code",
+                                                "fullscreen",
+                                                "insertdatetime",
+                                                "media",
+                                                "table",
+                                                "code",
+                                                "help",
+                                                "wordcount",
+                                            ],
+                                            toolbar:
+                                                "undo redo | blocks | " +
+                                                "bold italic forecolor | alignleft aligncenter " +
+                                                "alignright alignjustify | bullist numlist outdent indent | " +
+                                                "removeformat | help",
+                                            content_style:
+                                                "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                                        }}
                                     />
                                 </ProForm.Item>
                             </Col>

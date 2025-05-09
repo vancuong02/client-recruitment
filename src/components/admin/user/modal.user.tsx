@@ -9,6 +9,7 @@ import { Col, Form, Row, message, notification } from "antd";
 import { isMobile } from "react-device-detect";
 import { useState, useEffect } from "react";
 import {
+    callAdminUpdateUser,
     callCreateUser,
     callFetchCompany,
     callFetchRole,
@@ -40,11 +41,11 @@ const ModalUser = (props: IProps) => {
 
     useEffect(() => {
         if (dataInit?._id) {
-            if (dataInit.company) {
+            if (dataInit.companyId) {
                 setCompanies([
                     {
-                        label: dataInit.company.name,
-                        value: dataInit.company._id,
+                        label: dataInit.companyId.name,
+                        value: dataInit.companyId._id,
                     },
                 ]);
             }
@@ -60,27 +61,24 @@ const ModalUser = (props: IProps) => {
     }, [dataInit]);
 
     const submitUser = async (valuesForm: any) => {
-        const { name, email, password, address, age, gender, role, company } =
+        const { name, email, address, age, gender, password, role, company } =
             valuesForm;
         if (dataInit?._id) {
             //update
             const user = {
                 name,
                 email,
-                password,
                 age,
                 gender,
                 address,
                 role: role?.value ?? role._id,
-                company: {
-                    _id: company?.value ?? company._id,
-                    name: company?.label ?? company.name,
-                },
+                companyId:
+                    company?.value ?? dataInit?.companyId?._id ?? company?._id,
             };
 
-            const res = await callUpdateUser(user);
+            const res = await callAdminUpdateUser(dataInit?._id, user);
             if (res.data) {
-                message.success("Cập nhật user thành công");
+                message.success(res.message);
                 handleReset();
                 reloadTable();
             } else {
@@ -99,14 +97,12 @@ const ModalUser = (props: IProps) => {
                 gender,
                 address,
                 role: role.value,
-                company: {
-                    _id: company.value,
-                    name: company.label,
-                },
+                companyId: company?.value ?? company._id,
             };
             const res = await callCreateUser(user);
+
             if (res.data) {
-                message.success("Thêm mới user thành công");
+                message.success(res.message);
                 handleReset();
                 reloadTable();
             } else {
@@ -127,10 +123,8 @@ const ModalUser = (props: IProps) => {
     };
 
     // Usage of DebounceSelect
-    async function fetchCompanyList(name: string): Promise<ICompanySelect[]> {
-        const res = await callFetchCompany(
-            `current=1&pageSize=100&name=/${name}/i`
-        );
+    async function fetchCompanyList(): Promise<ICompanySelect[]> {
+        const res = await callFetchCompany(`current=1&pageSize=100`);
         if (res && res.data) {
             const list = res.data.result;
             const temp = list.map((item) => {
@@ -143,10 +137,8 @@ const ModalUser = (props: IProps) => {
         } else return [];
     }
 
-    async function fetchRoleList(name: string): Promise<ICompanySelect[]> {
-        const res = await callFetchRole(
-            `current=1&pageSize=100&name=/${name}/i`
-        );
+    async function fetchRoleList(): Promise<ICompanySelect[]> {
+        const res = await callFetchRole(`current=1&pageSize=100`);
         if (res && res.data) {
             const list = res.data.result;
             const temp = list.map((item) => {
@@ -292,6 +284,14 @@ const ModalUser = (props: IProps) => {
                         <ProForm.Item
                             name="company"
                             label="Thuộc Công Ty"
+                            initialValue={
+                                dataInit?.companyId
+                                    ? {
+                                          label: dataInit.companyId.name,
+                                          value: dataInit.companyId._id,
+                                      }
+                                    : undefined
+                            }
                             rules={[
                                 {
                                     required: true,
@@ -302,9 +302,9 @@ const ModalUser = (props: IProps) => {
                             <DebounceSelect
                                 allowClear
                                 showSearch
-                                defaultValue={companies}
+                                defaultValue={dataInit?.companyId?.name}
                                 value={companies}
-                                placeholder="Chọn công ty"
+                                placeholder={"Chọn công ty"}
                                 fetchOptions={fetchCompanyList}
                                 onChange={(newValue: any) => {
                                     if (

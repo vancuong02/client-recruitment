@@ -64,12 +64,12 @@ const CompanyPage = () => {
             hideInSearch: true,
         },
         {
-            title: "Name",
+            title: "Tên công ty",
             dataIndex: "name",
             sorter: true,
         },
         {
-            title: "Address",
+            title: "Địa chỉ",
             dataIndex: "location",
             sorter: true,
         },
@@ -99,7 +99,7 @@ const CompanyPage = () => {
             hideInSearch: true,
         },
         {
-            title: "Actions",
+            title: "Chức năng",
             hideInSearch: true,
             width: 50,
             render: (_value, entity, _index, _action) => (
@@ -151,44 +151,6 @@ const CompanyPage = () => {
         },
     ];
 
-    const buildQuery = (params: any, sort: any, filter: any) => {
-        const clone = { ...params };
-        if (clone.name) clone.name = `/${clone.name}/i`;
-        if (clone.address) clone.address = `/${clone.address}/i`;
-
-        let temp = queryString.stringify(clone);
-
-        let sortBy = "";
-        if (sort && sort.name) {
-            sortBy = sort.name === "ascend" ? "sort=name" : "sort=-name";
-        }
-        if (sort && sort.address) {
-            sortBy =
-                sort.address === "ascend" ? "sort=address" : "sort=-address";
-        }
-        if (sort && sort.createdAt) {
-            sortBy =
-                sort.createdAt === "ascend"
-                    ? "sort=createdAt"
-                    : "sort=-createdAt";
-        }
-        if (sort && sort.updatedAt) {
-            sortBy =
-                sort.updatedAt === "ascend"
-                    ? "sort=updatedAt"
-                    : "sort=-updatedAt";
-        }
-
-        //mặc định sort theo updatedAt
-        if (Object.keys(sortBy).length === 0) {
-            temp = `${temp}&sort=-updatedAt`;
-        } else {
-            temp = `${temp}&${sortBy}`;
-        }
-
-        return temp;
-    };
-
     return (
         <div>
             <Access permission={ALL_PERMISSIONS.COMPANIES.GET_PAGINATE}>
@@ -199,8 +161,9 @@ const CompanyPage = () => {
                     loading={isFetching}
                     columns={columns}
                     dataSource={companies}
-                    request={async (params, sort, filter): Promise<any> => {
-                        const query = buildQuery(params, sort, filter);
+                    request={async (params): Promise<any> => {
+                        const clone = { ...params };
+                        const query = queryString.stringify(clone);
                         dispatch(fetchCompany({ query }));
                     }}
                     scroll={{ x: true }}

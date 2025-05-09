@@ -63,7 +63,7 @@ export interface IUser {
         name: string;
     };
 
-    company?: {
+    companyId?: {
         _id: string;
         name: string;
     };
@@ -188,4 +188,19 @@ export interface IBodyUpdateUser {
     age?: number;
     gender?: string;
     address?: string;
+}
+
+export interface IBodyAdminUpdateUser {
+    email?: string;
+    name?: string;
+    age?: number;
+    gender?: string;
+    role?: string;
+    companyId?: string;
+    address?: string;
+}
+
+interface IQuery {
+    page?: number;
+    limit?: number;
 }

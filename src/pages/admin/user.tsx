@@ -4,7 +4,7 @@ import { fetchUser } from "@/redux/slice/userSlide";
 import { IUser } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from "@ant-design/pro-components";
-import { Button, Popconfirm, Space, message, notification } from "antd";
+import { Button, Popconfirm, Space, message } from "antd";
 import { useState, useRef } from "react";
 import dayjs from "dayjs";
 import { callDeleteUser } from "@/config/api";
@@ -29,15 +29,8 @@ const UserPage = () => {
     const handleDeleteUser = async (_id: string | undefined) => {
         if (_id) {
             const res = await callDeleteUser(_id);
-            if (res && res.data) {
-                message.success("Xóa User thành công");
-                reloadTable();
-            } else {
-                notification.error({
-                    message: "Có lỗi xảy ra",
-                    description: res.message,
-                });
-            }
+            message.success(res.message);
+            reloadTable();
         }
     };
 
@@ -101,7 +94,7 @@ const UserPage = () => {
             hideInSearch: true,
         },
         {
-            title: "Actions",
+            title: "Chức năng",
             hideInSearch: true,
             width: 50,
             render: (_value, entity, _index, _action) => (

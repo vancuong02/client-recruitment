@@ -12,6 +12,8 @@ import {
     ISubscribers,
     IBodyUpdateUser,
     IBodyJobRes,
+    IBodyAdminUpdateUser,
+    IQuery,
 } from "@/types/backend";
 import axios from "config/axios-customize";
 
@@ -130,6 +132,12 @@ export const callUpdateUser = (user: IBodyUpdateUser) => {
     });
 };
 
+export const callAdminUpdateUser = (id: string, user: IBodyAdminUpdateUser) => {
+    return axios.patch<IBackendRes<IUser>>(`/api/v1/users/${id}`, {
+        ...user,
+    });
+};
+
 export const callDeleteUser = (id: string) => {
     return axios.delete<IBackendRes<IUser>>(`/api/v1/users/${id}`);
 };
@@ -180,6 +188,12 @@ export const callFetchJobById = (id: string) => {
     return axios.get<IBackendRes<IJob>>(`/api/v1/jobs/${id}`);
 };
 
+export const callFetchJobByCompany = (companyId: string) => {
+    return axios.get<IBackendRes<IJob[]>>(
+        `/api/v1/jobs/by-company/${companyId}`
+    );
+};
+
 /**
  *
 Module Resume
@@ -202,9 +216,9 @@ export const callDeleteResume = (id: string) => {
     return axios.delete<IBackendRes<IResume>>(`/api/v1/resumes/${id}`);
 };
 
-export const callFetchResume = (query: string) => {
+export const callFetchResume = (query: IQuery) => {
     return axios.get<IBackendRes<IModelPaginate<IResume>>>(
-        `/api/v1/resumes?${query}`
+        `/api/v1/resumes?page=${query.page}&limit=${query.limit}`
     );
 };
 

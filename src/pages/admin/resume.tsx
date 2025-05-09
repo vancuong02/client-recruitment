@@ -1,30 +1,53 @@
-import DataTable from "@/components/client/data-table";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { IResume } from "@/types/backend";
-import {
-    ActionType,
-    ProColumns,
-    ProFormSelect,
-} from "@ant-design/pro-components";
-import { message, notification } from "antd";
-import { useState, useRef } from "react";
 import dayjs from "dayjs";
+import { useState, useRef } from "react";
+import { DeleteOutlined } from "@ant-design/icons";
+import DataTable from "@/components/client/data-table";
+import { message, notification, Popconfirm, Space } from "antd";
+import { ActionType, ProColumns } from "@ant-design/pro-components";
+
+import { IResume } from "@/types/backend";
 import { callDeleteResume } from "@/config/api";
-import queryString from "query-string";
-import { fetchResume } from "@/redux/slice/resumeSlide";
-import ViewDetailResume from "@/components/admin/resume/view.resume";
-import { ALL_PERMISSIONS } from "@/config/permissions";
 import Access from "@/components/share/access";
+import { ALL_PERMISSIONS } from "@/config/permissions";
+import { fetchResume } from "@/redux/slice/resumeSlide";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import ViewDetailResume from "@/components/admin/resume/view.resume";
 
 const ResumePage = () => {
     const tableRef = useRef<ActionType>();
+    const dispatch = useAppDispatch();
+
+    // Lấy page và limit từ URL hoặc dùng giá trị mặc định
+    const [page, setPage] = useState<number>(() => {
+        const params = new URLSearchParams(window.location.search);
+        return Number(params.get("page")) || 1;
+    });
+    const [limit, setLimit] = useState<number>(() => {
+        const params = new URLSearchParams(window.location.search);
+        return Number(params.get("limit")) || 10;
+    });
+
+    const handleTableChange = (pagination: any) => {
+        const { current, limit } = pagination;
+        setPage(current);
+        setLimit(limit);
+
+        // Cập nhật URL với page và limit mới
+        const params = new URLSearchParams(window.location.search);
+        params.set("page", String(current));
+        params.set("limit", String(limit));
+
+        // Thay đổi URL mà không reload trang
+        window.history.pushState(
+            {},
+            "",
+            `${window.location.pathname}?${params.toString()}`
+        );
+    };
 
     const isFetching = useAppSelector((state) => state.resume.isFetching);
     const meta = useAppSelector((state) => state.resume.meta);
     const resumes = useAppSelector((state) => state.resume.result);
-    const dispatch = useAppDispatch();
-    console.log("resumes: ", resumes);
-
     const [dataInit, setDataInit] = useState<IResume | null>(null);
     const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
 
@@ -70,23 +93,18 @@ const ResumePage = () => {
         {
             title: "Trạng Thái",
             dataIndex: "status",
-            sorter: true,
-            renderFormItem: (item, props, form) => (
-                <ProFormSelect
-                    showSearch
-                    mode="multiple"
-                    allowClear
-                    valueEnum={{
-                        PENDING: "PENDING",
-                        REVIEWING: "REVIEWING",
-                        APPROVED: "APPROVED",
-                        REJECTED: "REJECTED",
-                    }}
-                    placeholder="Chọn level"
-                />
-            ),
+            hideInSearch: true,
+            filters: [
+                { text: "PENDING", value: "PENDING" },
+                { text: "REVIEWING", value: "REVIEWING" },
+                { text: "APPROVED", value: "APPROVED" },
+                { text: "REJECTED", value: "REJECTED" },
+            ],
+            filterMode: "menu",
+            filterMultiple: true,
+            onFilter: (value: boolean | React.Key, record: IResume) =>
+                record.status === value,
         },
-
         {
             title: "Job",
             dataIndex: ["jobId"],
@@ -128,91 +146,39 @@ const ResumePage = () => {
             },
             hideInSearch: true,
         },
-        // {
-
-        //     title: 'Actions',
-        //     hideInSearch: true,
-        //     width: 50,
-        //     render: (_value, entity, _index, _action) => (
-        //         <Space>
-        //             <EditOutlined
-        //                 style={{
-        //                     fontSize: 20,
-        //                     color: '#ffa500',
-        //                 }}
-        //                 type=""
-        //                 onClick={() => {
-        //                     navigate(`/admin/job/upsert?id=${entity._id}`)
-        //                 }}
-        //             />
-
-        //             <Popconfirm
-        //                 placement="leftTop"
-        //                 title={"Xác nhận xóa resume"}
-        //                 description={"Bạn có chắc chắn muốn xóa resume này ?"}
-        //                 onConfirm={() => handleDeleteResume(entity._id)}
-        //                 okText="Xác nhận"
-        //                 cancelText="Hủy"
-        //             >
-        //                 <span style={{ cursor: "pointer", margin: "0 10px" }}>
-        //                     <DeleteOutlined
-        //                         style={{
-        //                             fontSize: 20,
-        //                             color: '#ff4d4f',
-        //                         }}
-        //                     />
-        //                 </span>
-        //             </Popconfirm>
-        //         </Space>
-        //     ),
-
-        // },
+        {
+            title: "Chức năng",
+            hideInSearch: true,
+            width: 50,
+            render: (_value, entity, _index, _action) => (
+                <Space>
+                    <Popconfirm
+                        placement="leftTop"
+                        title={"Xác nhận xóa resume"}
+                        description={"Bạn có chắc chắn muốn xóa resume này ?"}
+                        onConfirm={() => handleDeleteResume(entity._id)}
+                        okText="Xác nhận"
+                        cancelText="Hủy"
+                    >
+                        <span style={{ cursor: "pointer", margin: "0 10px" }}>
+                            <DeleteOutlined
+                                style={{
+                                    fontSize: 20,
+                                    color: "#ff4d4f",
+                                }}
+                            />
+                        </span>
+                    </Popconfirm>
+                </Space>
+            ),
+        },
     ];
-
-    const buildQuery = (params: any, sort: any, filter: any) => {
-        const clone = { ...params };
-        // if (clone.name) clone.name = `/${clone.name}/i`;
-        // if (clone.salary) clone.salary = `/${clone.salary}/i`;
-        if (clone?.status?.length) {
-            clone.status = clone.status.join(",");
-        }
-
-        let temp = queryString.stringify(clone);
-
-        let sortBy = "";
-        if (sort && sort.status) {
-            sortBy = sort.status === "ascend" ? "sort=status" : "sort=-status";
-        }
-
-        if (sort && sort.createdAt) {
-            sortBy =
-                sort.createdAt === "ascend"
-                    ? "sort=createdAt"
-                    : "sort=-createdAt";
-        }
-        if (sort && sort.updatedAt) {
-            sortBy =
-                sort.updatedAt === "ascend"
-                    ? "sort=updatedAt"
-                    : "sort=-updatedAt";
-        }
-
-        //mặc định sort theo updatedAt
-        if (Object.keys(sortBy).length === 0) {
-            temp = `${temp}&sort=-updatedAt`;
-        } else {
-            temp = `${temp}&${sortBy}`;
-        }
-
-        temp +=
-            "&populate=companyId,jobId&fields=companyId._id, companyId.name, companyId.logo, jobId._id, jobId.name";
-        return temp;
-    };
 
     return (
         <div>
             <Access permission={ALL_PERMISSIONS.RESUMES.GET_PAGINATE}>
                 <DataTable<IResume>
+                    search={false}
                     actionRef={tableRef}
                     headerTitle="Danh sách Resumes"
                     rowKey="_id"
@@ -220,19 +186,20 @@ const ResumePage = () => {
                     columns={columns}
                     dataSource={resumes}
                     request={async (params, sort, filter): Promise<any> => {
-                        const query = buildQuery(params, sort, filter);
-                        dispatch(fetchResume({ query }));
+                        dispatch(fetchResume({ page, limit }));
                     }}
                     scroll={{ x: true }}
                     pagination={{
-                        current: meta.current,
-                        pageSize: meta.pageSize,
+                        current: page,
+                        pageSize: limit,
                         showSizeChanger: true,
                         total: meta.total,
+                        onChange: (page, limit) => {
+                            handleTableChange({ current: page, limit });
+                        },
                         showTotal: (total, range) => {
                             return (
                                 <div>
-                                    {" "}
                                     {range[0]}-{range[1]} trên {total} rows
                                 </div>
                             );

@@ -49,7 +49,7 @@ const ApplyModal = (props: IProps) => {
             if (jobDetail) {
                 const res = await callCreateResume(
                     urlCV,
-                    jobDetail?.company?._id,
+                    jobDetail?.companyId?._id,
                     jobDetail?._id
                 );
                 if (res.data) {
@@ -123,7 +123,7 @@ const ApplyModal = (props: IProps) => {
                                         <div>
                                             Bạn đang ứng tuyển công việc{" "}
                                             <b>{jobDetail?.name} </b>tại{" "}
-                                            <b>{jobDetail?.company?.name}</b>
+                                            <b>{jobDetail?.companyId?.name}</b>
                                         </div>
                                     </Col>
                                     <Col span={24}>
