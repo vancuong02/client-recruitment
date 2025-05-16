@@ -77,7 +77,6 @@ export const LEVEL_LIST = [
     { label: "Senior", value: "SENIOR" },
     { label: "Trưởng nhóm", value: "TECHLEAD" },
     { label: "Trưởng phòng", value: "MANAGER" },
-    { label: "All Levels", value: "ALL" },
 ];
 
 export const TYPE_CONTRACT_LIST = [
@@ -98,7 +97,7 @@ export const LOCATION_LIST = [
     { label: "Hồ Chí Minh", value: "HOCHIMINH" },
     { label: "Đà Nẵng", value: "DANANG" },
     { label: "Cần Thơ", value: "CANTHO" },
-    { label: "Tất cả thành phố", value: "ALL" },
+    { label: "Tất cả địa chỉ", value: "ALL" },
 ];
 
 export const nonAccentVietnamese = (str: string) => {

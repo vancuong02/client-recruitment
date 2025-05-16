@@ -16,8 +16,6 @@ const LoginPage = () => {
         (state) => state.account.isAuthenticated
     );
 
-    console.log("isAuthenticated", isAuthenticated);
-
     let location = useLocation();
     let params = new URLSearchParams(location.search);
     const callback = params?.get("callback");

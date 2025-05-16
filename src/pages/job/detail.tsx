@@ -132,7 +132,13 @@ const ClientJobDetailPage = (props: any) => {
                                     </button>
                                 </div>
                                 <Divider />
-                                <div className={styles["skills"]}>
+                                <div
+                                    style={{
+                                        rowGap: 8,
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                    }}
+                                >
                                     {jobDetail?.skills?.map((item, index) => {
                                         return (
                                             <Tag

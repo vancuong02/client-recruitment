@@ -102,7 +102,7 @@ const ViewUpsertJob = (props: any) => {
                 skills: values.skills,
                 locations: values.locations,
                 levels: values.levels,
-                typeConstracts: values.typeConstracts,
+                typeContracts: values.typeContracts,
                 typeWorks: values.typeWorks,
                 salary: values.salary,
                 quantity: values.quantity,
@@ -135,7 +135,7 @@ const ViewUpsertJob = (props: any) => {
                 skills: values.skills,
                 locations: values.locations,
                 levels: values.levels,
-                typeConstracts: values.typeConstracts,
+                typeContracts: values.typeContracts,
                 typeWorks: values.typeWorks,
                 salary: values.salary,
                 quantity: values.quantity,
@@ -299,7 +299,7 @@ const ViewUpsertJob = (props: any) => {
                             </Col>
                             <Col span={24} md={6}>
                                 <ProFormSelect
-                                    name="typeConstracts"
+                                    name="typeContracts"
                                     label="Loại hợp đồng"
                                     options={TYPE_CONTRACT_LIST}
                                     placeholder="Loại hợp đồng"

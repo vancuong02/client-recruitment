@@ -1,73 +1,114 @@
-import { callFetchJob } from "@/config/api";
-import { LOCATION_LIST, convertSlug, getLocationName } from "@/config/utils";
-import { IJob } from "@/types/backend";
-import { EnvironmentOutlined, ThunderboltOutlined } from "@ant-design/icons";
-import { Card, Col, Empty, Pagination, Row, Skeleton, Spin } from "antd";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { isMobile } from "react-device-detect";
 import { Link, useNavigate } from "react-router-dom";
-import styles from "styles/client.module.scss";
+import { Card, Col, Empty, Pagination, Row, Skeleton } from "antd";
+import { EnvironmentOutlined, ThunderboltOutlined } from "@ant-design/icons";
+
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/vi";
-
 dayjs.extend(relativeTime);
 dayjs.locale("vi");
+
+import { IJob } from "@/types/backend";
+import { callFetchJob } from "@/config/api";
+import styles from "styles/client.module.scss";
+import { convertSlug, getLocationName } from "@/config/utils";
 
 interface IProps {
     showPagination?: boolean;
 }
 
+interface IQueryParams {
+    current?: number;
+    pageSize?: number;
+    skills?: string;
+    locations: string;
+    levels?: string;
+    typeWorks?: string;
+    typeContracts?: string;
+}
+
+const PAGE = 1;
+const LIMIT = 10;
 const JobCard = (props: IProps) => {
     const { showPagination = false } = props;
 
-    const [displayJob, setDisplayJob] = useState<IJob[] | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const [current, setCurrent] = useState(1);
-    const [pageSize, setPageSize] = useState(6);
-    const [total, setTotal] = useState(0);
-    const [filter, setFilter] = useState("");
-    const [sortQuery, setSortQuery] = useState("sort=-updatedAt");
     const navigate = useNavigate();
+    const [total, setTotal] = useState(0);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [displayJob, setDisplayJob] = useState<IJob[] | null>(null);
+
+    const searchParams = new URLSearchParams(window.location.search);
+
+    // Tối ưu việc lấy các filter params
+    const [queryParams, setQueryParams] = useState<IQueryParams>({
+        current: Number(searchParams.get("page")) || PAGE,
+        pageSize: Number(searchParams.get("limit")) || LIMIT,
+        skills: searchParams.get("skills") || "",
+        locations: searchParams.get("location") || "",
+        levels: searchParams.get("levels") || "",
+        typeWorks: searchParams.get("typeWorks") || "",
+        typeContracts: searchParams.get("typeContracts") || "",
+    });
 
     useEffect(() => {
+        setQueryParams({
+            current: Number(searchParams.get("page")) || PAGE,
+            pageSize: Number(searchParams.get("limit")) || LIMIT,
+            skills: searchParams.get("skills") || "",
+            locations: searchParams.get("location") || "",
+            levels: searchParams.get("levels") || "",
+            typeWorks: searchParams.get("typeWorks") || "",
+            typeContracts: searchParams.get("typeContracts") || "",
+        });
+    }, [location.search]);
+
+    useEffect(() => {
+        const fetchJob = async () => {
+            try {
+                const queryString = new URLSearchParams(
+                    Object.fromEntries(
+                        Object.entries(queryParams).filter(
+                            ([_, value]) => value !== ""
+                        )
+                    )
+                ).toString();
+                const res = await callFetchJob(queryString);
+                if (res?.data) {
+                    setDisplayJob(res.data.result);
+                    setTotal(res.data.meta.total);
+                }
+            } catch (error) {
+                console.error("Error fetching jobs:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
         fetchJob();
-    }, [current, pageSize, filter, sortQuery]);
-
-    const fetchJob = async () => {
-        setIsLoading(true);
-        try {
-            let query = `current=${current}&pageSize=${pageSize}`;
-            if (filter) {
-                query += `&${filter}`;
-            }
-            if (sortQuery) {
-                query += `&${sortQuery}`;
-            }
-
-            const res = await callFetchJob(query);
-            if (res && res.data) {
-                setDisplayJob(res.data.result);
-                setTotal(res.data.meta.total);
-            }
-        } catch (error) {
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    }, [queryParams]);
 
     const handleOnchangePage = (pagination: {
-        current: number;
-        pageSize: number;
+        page: number;
+        limit: number;
     }) => {
-        if (pagination && pagination.current !== current) {
-            setCurrent(pagination.current);
+        if (pagination && pagination.page !== queryParams.current) {
+            setQueryParams({
+                ...queryParams,
+                current: pagination.page,
+            });
+            searchParams.set("page", pagination.page.toString());
         }
-        if (pagination && pagination.pageSize !== pageSize) {
-            setPageSize(pagination.pageSize);
-            setCurrent(1);
+        if (pagination && pagination.limit !== queryParams.pageSize) {
+            setQueryParams({
+                ...queryParams,
+                current: PAGE,
+                pageSize: pagination.limit,
+            });
+            searchParams.set("page", PAGE.toString());
+            searchParams.set("limit", pagination.limit.toString());
         }
+        navigate(`/job?${searchParams.toString()}`);
     };
 
     const handleViewDetailJob = (item: IJob) => {
@@ -80,7 +121,7 @@ const JobCard = (props: IProps) => {
             {!showPagination && (
                 <Col span={24}>
                     <div
-                        style={{ marginBottom: 30 }}
+                        style={{ marginBottom: 15 }}
                         className={
                             isMobile
                                 ? styles["dflex-mobile"]
@@ -97,7 +138,9 @@ const JobCard = (props: IProps) => {
             <div className={`${styles["job-content"]}`}>
                 {isLoading ? (
                     <Row gutter={[20, 20]}>
-                        {Array.from({ length: pageSize }).map((_, index) => (
+                        {Array.from({
+                            length: 6,
+                        }).map((_, index) => (
                             <Col span={24} md={12} key={index}>
                                 <Card>
                                     <div className={styles["card-job-content"]}>
@@ -257,14 +300,14 @@ const JobCard = (props: IProps) => {
                             }}
                         >
                             <Pagination
-                                current={current}
+                                current={queryParams.current}
                                 total={total}
-                                pageSize={pageSize}
+                                pageSize={queryParams.pageSize}
                                 responsive
                                 onChange={(p: number, s: number) =>
                                     handleOnchangePage({
-                                        current: p,
-                                        pageSize: s,
+                                        page: p,
+                                        limit: s,
                                     })
                                 }
                             />

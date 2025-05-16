@@ -12,54 +12,61 @@ interface IProps {
     showPagination?: boolean;
 }
 
+const PAGE = 1;
+const LIMIT = 8;
 const CompanyCard = (props: IProps) => {
     const { showPagination = false } = props;
 
+    const [total, setTotal] = useState(0);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [displayCompany, setDisplayCompany] = useState<ICompany[] | null>(
         null
     );
-    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const [current, setCurrent] = useState(1);
-    const [pageSize, setPageSize] = useState(8);
-    const [total, setTotal] = useState(0);
-    const [filter, setFilter] = useState("");
-    const [sortQuery, setSortQuery] = useState("sort=-updatedAt");
     const navigate = useNavigate();
+    const urlParams = new URLSearchParams(window.location.search);
+    const [page, setPage] = useState(() => {
+        const pageParam = urlParams.get("page");
+        return Number(pageParam) || PAGE;
+    });
+
+    const [limit, setLimit] = useState(() => {
+        const limitParam = urlParams.get("limit");
+        return Number(limitParam) || LIMIT;
+    });
 
     useEffect(() => {
+        const fetchCompany = async () => {
+            try {
+                const query = `current=${page}&pageSize=${limit}`;
+                const res = await callFetchCompany(query);
+                if (res && res.data) {
+                    setDisplayCompany(res.data.result);
+                    setTotal(res.data.meta.total);
+                }
+            } catch (error) {
+            } finally {
+                setIsLoading(false);
+            }
+        };
         fetchCompany();
-    }, [current, pageSize, filter, sortQuery]);
-
-    const fetchCompany = async () => {
-        setIsLoading(true);
-        let query = `current=${current}&pageSize=${pageSize}`;
-        if (filter) {
-            query += `&${filter}`;
-        }
-        if (sortQuery) {
-            query += `&${sortQuery}`;
-        }
-
-        const res = await callFetchCompany(query);
-        if (res && res.data) {
-            setDisplayCompany(res.data.result);
-            setTotal(res.data.meta.total);
-        }
-        setIsLoading(false);
-    };
+    }, [page, limit]);
 
     const handleOnchangePage = (pagination: {
         current: number;
         pageSize: number;
     }) => {
-        if (pagination && pagination.current !== current) {
-            setCurrent(pagination.current);
+        if (pagination && pagination.current !== page) {
+            setPage(pagination.current);
+            urlParams.set("page", pagination.current.toString());
         }
-        if (pagination && pagination.pageSize !== pageSize) {
-            setPageSize(pagination.pageSize);
-            setCurrent(1);
+        if (pagination && pagination.pageSize !== limit) {
+            setLimit(pagination.pageSize);
+            setPage(1);
+            urlParams.set("page", PAGE.toString());
+            urlParams.set("limit", pagination.pageSize.toString());
         }
+        navigate(`?${urlParams.toString()}`);
     };
 
     const handleViewDetailJob = (item: ICompany) => {
@@ -74,7 +81,7 @@ const CompanyCard = (props: IProps) => {
             {!showPagination && (
                 <Col span={24}>
                     <div
-                        style={{ margin: "30px 0" }}
+                        style={{ margin: "30px 0 15px" }}
                         className={
                             isMobile
                                 ? styles["dflex-mobile"]
@@ -91,7 +98,7 @@ const CompanyCard = (props: IProps) => {
 
             {isLoading ? (
                 <Row gutter={[20, 20]}>
-                    {Array.from({ length: pageSize }).map((_, index) => (
+                    {Array.from({ length: limit }).map((_, index) => (
                         <Col span={24} md={6} key={index}>
                             <div
                                 style={{
@@ -136,6 +143,7 @@ const CompanyCard = (props: IProps) => {
                                         borderRadius: 8,
                                         position: "relative",
                                         border: "1px solid #dedede",
+                                        overflow: "hidden",
                                         background:
                                             "linear-gradient(167deg, #F8F8F8 2.38%, #FFF 70.43%)",
                                     }}
@@ -203,20 +211,22 @@ const CompanyCard = (props: IProps) => {
                                                     /,\s*([^,]+)$/
                                                 )?.[1]}
                                         </span>
-                                        <div
-                                            style={{
-                                                gap: 4,
-                                                display: "flex",
-                                                alignItems: "center",
-                                            }}
-                                        >
-                                            <Badge
-                                                size="default"
-                                                status="success"
-                                            />
-                                            <span>5 job</span>
-                                            <IoIosArrowForward />
-                                        </div>
+                                        {item.jobCount > 0 && (
+                                            <div
+                                                style={{
+                                                    gap: 4,
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                }}
+                                            >
+                                                <Badge
+                                                    size="default"
+                                                    status="success"
+                                                />
+                                                <span>{item.jobCount} job</span>
+                                                <IoIosArrowForward />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </Col>
@@ -225,14 +235,21 @@ const CompanyCard = (props: IProps) => {
                     {(!displayCompany ||
                         (displayCompany && displayCompany.length === 0)) &&
                         !isLoading && (
-                            <div className={styles["empty"]}>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    width: "100%",
+                                    padding: 50,
+                                }}
+                            >
                                 <Empty description="Không có dữ liệu" />
                             </div>
                         )}
                 </Row>
             )}
 
-            {showPagination && !isLoading && (
+            {displayCompany && displayCompany.length > 0 && showPagination && (
                 <Row
                     style={{
                         marginTop: 30,
@@ -241,9 +258,9 @@ const CompanyCard = (props: IProps) => {
                     }}
                 >
                     <Pagination
-                        current={current}
+                        current={page}
                         total={total}
-                        pageSize={pageSize}
+                        pageSize={limit}
                         responsive
                         onChange={(p: number, s: number) =>
                             handleOnchangePage({

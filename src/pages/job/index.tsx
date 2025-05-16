@@ -5,7 +5,7 @@ import SearchClient from "@/components/client/search.client";
 
 const ClientJobPage = (props: any) => {
     return (
-        <Row gutter={[20, 20]}>
+        <Row gutter={[0, 20]}>
             <Col span={24}>
                 <SearchClient />
             </Col>

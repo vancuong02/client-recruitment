@@ -43,6 +43,7 @@ export interface ICompany {
     location?: string;
     logo: string;
     description?: string;
+    jobCount: number;
     createdBy?: string;
     isDeleted?: boolean;
     deletedAt?: boolean | null;
@@ -80,8 +81,8 @@ export interface IJob {
     skills: string[];
     locations: string[];
     levels: string[];
-    typeConstracts: string[];
-    typeWords: string[];
+    typeContracts: string[];
+    typeWorks: string[];
     salary: string;
     quantity: number;
     description: string;
@@ -105,7 +106,7 @@ export interface IBodyJobRes {
     skills: string[];
     locations: string[];
     levels: string[];
-    typeConstracts: string[];
+    typeContracts: string[];
     typeWorks: string[];
     salary: string;
     quantity: number;

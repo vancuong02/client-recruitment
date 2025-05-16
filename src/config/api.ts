@@ -29,7 +29,7 @@ export const callRegister = (
     gender: string,
     address: string
 ) => {
-    return axios.post<IBackendRes<IUser>>("/api/v1/auth/register", {
+    return axios.post<IBackendRes<IAccount>>("/api/v1/auth/register", {
         name,
         email,
         password,
