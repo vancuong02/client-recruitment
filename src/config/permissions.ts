@@ -131,4 +131,5 @@ export const ALL_MODULES = {
     ROLES: "ROLES",
     USERS: "USERS",
     SUBSCRIBERS: "SUBSCRIBERS",
+    MAIL: "MAIL",
 };

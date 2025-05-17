@@ -4,7 +4,7 @@ import { IRole } from "@/types/backend";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { ActionType, ProColumns } from "@ant-design/pro-components";
 import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import dayjs from "dayjs";
 import { callDeleteRole } from "@/config/api";
 import queryString from "query-string";
@@ -13,15 +13,43 @@ import ModalRole from "@/components/admin/role/modal.role";
 import { ALL_PERMISSIONS } from "@/config/permissions";
 import Access from "@/components/share/access";
 
+const PAGE = 1;
+const LIMIT = 10;
 const RolePage = () => {
-    const [openModal, setOpenModal] = useState<boolean>(false);
-
     const tableRef = useRef<ActionType>();
 
+    const [openModal, setOpenModal] = useState<boolean>(false);
+    const [searchParams, setSearchParams] = useState({
+        page: new URLSearchParams(window.location.search).get("page") || PAGE,
+        limit:
+            new URLSearchParams(window.location.search).get("limit") || LIMIT,
+    });
+
+    const dispatch = useAppDispatch();
     const isFetching = useAppSelector((state) => state.role.isFetching);
     const meta = useAppSelector((state) => state.role.meta);
     const roles = useAppSelector((state) => state.role.result);
-    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        const query = queryString.stringify(searchParams);
+        dispatch(fetchRole(query));
+    }, [dispatch, searchParams]);
+
+    const handleOnChangePagination = (
+        page: number,
+        pageSize: number | undefined
+    ) => {
+        setSearchParams({
+            page: page.toString(),
+            limit: pageSize?.toString() || LIMIT.toString(),
+        });
+        const newQuery = queryString.stringify({
+            page: page.toString(),
+            limit: pageSize?.toString() || LIMIT.toString(),
+        });
+        // Thay đổi trên URL
+        window.history.pushState({}, document.title, `?${newQuery}`);
+    };
 
     const handleDeleteRole = async (_id: string | undefined) => {
         if (_id) {
@@ -146,60 +174,28 @@ const RolePage = () => {
         },
     ];
 
-    const buildQuery = (params: any, sort: any, filter: any) => {
-        const clone = { ...params };
-        if (clone.name) clone.name = `/${clone.name}/i`;
-
-        let temp = queryString.stringify(clone);
-
-        let sortBy = "";
-        if (sort && sort.name) {
-            sortBy = sort.name === "ascend" ? "sort=name" : "sort=-name";
-        }
-        if (sort && sort.createdAt) {
-            sortBy =
-                sort.createdAt === "ascend"
-                    ? "sort=createdAt"
-                    : "sort=-createdAt";
-        }
-        if (sort && sort.updatedAt) {
-            sortBy =
-                sort.updatedAt === "ascend"
-                    ? "sort=updatedAt"
-                    : "sort=-updatedAt";
-        }
-
-        //mặc định sort theo updatedAt
-        if (Object.keys(sortBy).length === 0) {
-            temp = `${temp}&sort=-updatedAt`;
-        } else {
-            temp = `${temp}&${sortBy}`;
-        }
-
-        return temp;
-    };
-
     return (
         <div>
             <Access permission={ALL_PERMISSIONS.ROLES.GET_PAGINATE}>
                 <DataTable<IRole>
                     search={false}
                     actionRef={tableRef}
-                    headerTitle="Danh sách Roles (Vai Trò)"
+                    headerTitle="Danh sách Roles"
                     rowKey="_id"
                     loading={isFetching}
                     columns={columns}
                     dataSource={roles}
-                    request={async (params, sort, filter): Promise<any> => {
-                        const query = buildQuery(params, sort, filter);
-                        dispatch(fetchRole({ query }));
+                    request={async (): Promise<any> => {
+                        const query = queryString.stringify(searchParams);
+                        dispatch(fetchRole(query));
                     }}
                     scroll={{ x: true }}
                     pagination={{
-                        current: meta.current,
-                        pageSize: meta.pageSize,
+                        current: Number(searchParams.page),
+                        pageSize: Number(searchParams.limit),
                         showSizeChanger: true,
                         total: meta.total,
+                        onChange: handleOnChangePagination,
                         showTotal: (total, range) => {
                             return (
                                 <div>

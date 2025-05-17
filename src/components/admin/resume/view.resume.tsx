@@ -32,7 +32,7 @@ const ViewDetailResume = (props: IProps) => {
         const status = form.getFieldValue("status");
         const res = await callUpdateResumeStatus(dataInit?._id, status);
         if (res.data) {
-            message.success("Update Resume status thành công!");
+            message.success("Cập nhật trạng thái CV thành công!");
             setDataInit(null);
             onClose(false);
             reloadTable();

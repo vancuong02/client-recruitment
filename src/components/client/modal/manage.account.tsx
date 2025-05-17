@@ -17,6 +17,7 @@ import { IResume } from "@/types/backend";
 import { useState, useEffect } from "react";
 import {
     callChangePassword,
+    callCreateSubscriber,
     callFetchResumeByUser,
     callGetSubscriberSkills,
     callUpdateSubscriber,
@@ -236,12 +237,25 @@ const UserUpdateInfo = () => {
 const JobByEmail = () => {
     const [form] = Form.useForm();
     const user = useAppSelector((state) => state.account.user);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isExistingSubscriber, setIsExistingSubscriber] = useState(false);
 
     useEffect(() => {
         const init = async () => {
-            const res = await callGetSubscriberSkills();
-            if (res && res.data) {
-                form.setFieldValue("skills", res.data.skills);
+            try {
+                const res = await callGetSubscriberSkills();
+                if (res?.data) {
+                    form.setFieldValue("skills", res.data.skills);
+                    setIsExistingSubscriber(true);
+                }
+            } catch (error) {
+                notification.error({
+                    message: "Có lỗi xảy ra",
+                    description: "Không thể tải thông tin đăng ký",
+                });
+            } finally {
+                setIsLoading(false);
             }
         };
         init();
@@ -249,57 +263,77 @@ const JobByEmail = () => {
 
     const onFinish = async (values: any) => {
         const { skills } = values;
-        const res = await callUpdateSubscriber({
-            email: user.email,
-            name: user.name,
-            skills: skills ? skills : [],
-        });
-        if (res.data) {
-            message.success("Cập nhật thông tin thành công");
-        } else {
+        setIsSubmitting(true);
+        try {
+            const payload = {
+                email: user.email,
+                name: user.name,
+                skills: skills ?? [],
+            };
+
+            const res = isExistingSubscriber
+                ? await callUpdateSubscriber(payload)
+                : await callCreateSubscriber(payload);
+
+            if (res.data) {
+                message.success(
+                    isExistingSubscriber
+                        ? "Cập nhật thông tin thành công"
+                        : "Đăng ký nhận thông báo thành công"
+                );
+            }
+        } catch (error: any) {
             notification.error({
                 message: "Có lỗi xảy ra",
-                description: res.message,
+                description:
+                    error?.response?.data?.message ||
+                    "Đã có lỗi xảy ra, vui lòng thử lại sau",
             });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <>
-            <Form onFinish={onFinish} form={form}>
-                <Row gutter={[20, 20]}>
-                    <Col span={24}>
-                        <Form.Item
-                            label={"Kỹ năng"}
-                            name={"skills"}
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng chọn ít nhất 1 skill!",
-                                },
-                            ]}
-                        >
-                            <Select
-                                mode="multiple"
-                                allowClear
-                                showArrow={false}
-                                style={{ width: "100%" }}
-                                placeholder={
-                                    <>
-                                        <MonitorOutlined /> Tìm theo kỹ năng...
-                                    </>
-                                }
-                                optionLabelProp="label"
-                                options={SKILLS_LIST}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                        <Button onClick={() => form.submit()}>Cập nhật</Button>
-                    </Col>
-                </Row>
-            </Form>
-        </>
+        <Form onFinish={onFinish} form={form}>
+            <Row gutter={[20, 20]}>
+                <Col span={24}>
+                    <Form.Item
+                        label={"Kỹ năng"}
+                        name={"skills"}
+                        rules={[
+                            {
+                                required: true,
+                                message: "Vui lòng chọn ít nhất 1 skill!",
+                            },
+                        ]}
+                    >
+                        <Select
+                            mode="multiple"
+                            allowClear
+                            showArrow={false}
+                            style={{ width: "100%" }}
+                            placeholder={
+                                <>
+                                    <MonitorOutlined /> Tìm theo kỹ năng...
+                                </>
+                            }
+                            optionLabelProp="label"
+                            options={SKILLS_LIST}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col span={24}>
+                    <Button
+                        loading={isSubmitting}
+                        disabled={isLoading}
+                        onClick={() => form.submit()}
+                    >
+                        {isExistingSubscriber ? "Cập nhật" : "Đăng ký"}
+                    </Button>
+                </Col>
+            </Row>
+        </Form>
     );
 };
 
@@ -418,10 +452,6 @@ const UserChangePassword = () => {
 const ManageAccount = (props: IProps) => {
     const { open, onClose } = props;
 
-    const onChange = (key: string) => {
-        // console.log(key);
-    };
-
     const items: TabsProps["items"] = [
         {
             key: "user-resume",
@@ -446,25 +476,19 @@ const ManageAccount = (props: IProps) => {
     ];
 
     return (
-        <>
-            <Modal
-                title="Quản lý tài khoản"
-                open={open}
-                onCancel={() => onClose(false)}
-                maskClosable={false}
-                footer={null}
-                destroyOnClose={true}
-                width={isMobile ? "100%" : "1000px"}
-            >
-                <div style={{ minHeight: 400 }}>
-                    <Tabs
-                        defaultActiveKey="user-resume"
-                        items={items}
-                        onChange={onChange}
-                    />
-                </div>
-            </Modal>
-        </>
+        <Modal
+            title="Quản lý tài khoản"
+            open={open}
+            onCancel={() => onClose(false)}
+            maskClosable={false}
+            footer={null}
+            destroyOnClose={true}
+            width={isMobile ? "100%" : "1000px"}
+        >
+            <div style={{ minHeight: 400 }}>
+                <Tabs defaultActiveKey="user-resume" items={items} />
+            </div>
+        </Modal>
     );
 };
 
