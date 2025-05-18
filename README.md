@@ -43,12 +43,40 @@
 -   Validation form
 -   Phân trang và lọc dữ liệu
 
-## Công nghệ sử dụng
+### Công nghệ sử dụng (ReactJS)
 
--   React
--   TypeScript
+1. **UI Framework**
+
 -   Ant Design
--   Redux
--   TinyMCE Editor
--   Vite
--   SCSS
+-   Pro Components
+-   Custom themes
+
+2. **State Management**
+
+-   Redux Toolkit
+-   Redux Persist
+-   Async state handling
+
+3. **Routing & Navigation**
+
+-   React Router DOM
+-   Protected routes
+-   Navigation guards
+
+4. **Form Handling**
+
+-   Form validation
+-   File upload
+-   Rich text editor (TinyMCE)
+
+5. **API Integration**
+
+-   Axios
+-   Request/Response interceptors
+-   Error handling
+
+6. **Performance Optimization**
+
+-   Code splitting
+-   Lazy loading
+-   Bundle optimization
