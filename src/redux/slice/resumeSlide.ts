@@ -1,25 +1,22 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { callFetchJob, callFetchResume } from "@/config/api";
-import { IQuery, IResume } from "@/types/backend";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { callFetchJob, callFetchResume } from '@/config/api'
+import { IQuery, IResume } from '@/types/backend'
 
 interface IState {
-    isFetching: boolean;
+    isFetching: boolean
     meta: {
-        current: number;
-        pageSize: number;
-        pages: number;
-        total: number;
-    };
-    result: IResume[];
+        current: number
+        pageSize: number
+        pages: number
+        total: number
+    }
+    result: IResume[]
 }
 // First, create the thunk
-export const fetchResume = createAsyncThunk(
-    "resume/fetchResume",
-    async (query: IQuery) => {
-        const response = await callFetchResume(query);
-        return response;
-    }
-);
+export const fetchResume = createAsyncThunk('resume/fetchResume', async (query: IQuery) => {
+    const response = await callFetchResume(query)
+    return response
+})
 
 const initialState: IState = {
     isFetching: true,
@@ -30,10 +27,10 @@ const initialState: IState = {
         total: 0,
     },
     result: [],
-};
+}
 
 export const resumeSlide = createSlice({
-    name: "resume",
+    name: 'resume',
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
@@ -45,30 +42,30 @@ export const resumeSlide = createSlice({
     extraReducers: (builder) => {
         // Add reducers for additional action types here, and handle loading state as needed
         builder.addCase(fetchResume.pending, (state, action) => {
-            state.isFetching = true;
+            state.isFetching = true
             // Add user to the state array
             // state.courseOrder = action.payload;
-        });
+        })
 
         builder.addCase(fetchResume.rejected, (state, action) => {
-            state.isFetching = false;
+            state.isFetching = false
             // Add user to the state array
             // state.courseOrder = action.payload;
-        });
+        })
 
         builder.addCase(fetchResume.fulfilled, (state, action) => {
             if (action.payload && action.payload.data) {
-                state.isFetching = false;
-                state.meta = action.payload.data.meta;
-                state.result = action.payload.data.result;
+                state.isFetching = false
+                state.meta = action.payload.data.meta
+                state.result = action.payload.data.result
             }
             // Add user to the state array
 
             // state.courseOrder = action.payload;
-        });
+        })
     },
-});
+})
 
-export const { setActiveMenu } = resumeSlide.actions;
+export const { setActiveMenu } = resumeSlide.actions
 
-export default resumeSlide.reducer;
+export default resumeSlide.reducer

@@ -1,67 +1,44 @@
-import {
-    Button,
-    Divider,
-    Form,
-    Input,
-    Select,
-    message,
-    notification,
-} from "antd";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { callRegister } from "config/api";
-import styles from "styles/auth.module.scss";
-import { IUser } from "@/types/backend";
-import { useDispatch } from "react-redux";
-import { setUserLoginInfo } from "@/redux/slice/accountSlide";
-const { Option } = Select;
+import { Button, Divider, Form, Input, Select, message, notification } from 'antd'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { callRegister } from 'config/api'
+import styles from 'styles/auth.module.scss'
+import { IUser } from '@/types/backend'
+import { useDispatch } from 'react-redux'
+import { setUserLoginInfo } from '@/redux/slice/accountSlide'
+const { Option } = Select
 
 const RegisterPage = () => {
-    const navigate = useNavigate();
-    const [isSubmit, setIsSubmit] = useState(false);
-    const dispatch = useDispatch();
+    const navigate = useNavigate()
+    const [isSubmit, setIsSubmit] = useState(false)
+    const dispatch = useDispatch()
 
     const onFinish = async (values: IUser) => {
-        const { name, email, password, age, gender, address } = values;
-        setIsSubmit(true);
-        const res = await callRegister(
-            name,
-            email,
-            password as string,
-            +age,
-            gender,
-            address
-        );
-        setIsSubmit(false);
+        const { name, email, password, age, gender, address } = values
+        setIsSubmit(true)
+        const res = await callRegister(name, email, password as string, +age, gender, address)
+        setIsSubmit(false)
         if (res.data) {
-            localStorage.setItem("access_token", res.data.access_token);
-            dispatch(setUserLoginInfo(res.data.user));
-            message.success("Đăng ký thành công");
-            navigate("/");
+            localStorage.setItem('access_token', res.data.access_token)
+            dispatch(setUserLoginInfo(res.data.user))
+            message.success('Đăng ký thành công')
+            navigate('/')
         } else {
             notification.error({
-                message: "Có lỗi xảy ra",
-                description:
-                    res.message && Array.isArray(res.message)
-                        ? res.message[0]
-                        : res.message,
+                message: 'Có lỗi xảy ra',
+                description: res.message && Array.isArray(res.message) ? res.message[0] : res.message,
                 duration: 5,
-            });
+            })
         }
-    };
+    }
 
     return (
-        <div className={styles["register-page"]}>
+        <div className={styles['register-page']}>
             <main className={styles.main}>
                 <div className={styles.container}>
                     <section className={styles.wrapper}>
                         <div className={styles.heading}>
-                            <h2
-                                className={`${styles.text} ${styles["text-large"]}`}
-                            >
-                                {" "}
-                                Đăng Ký Tài Khoản{" "}
-                            </h2>
+                            <h2 className={`${styles.text} ${styles['text-large']}`}> Đăng Ký Tài Khoản </h2>
                             <Divider />
                         </div>
                         <Form<IUser>
@@ -77,7 +54,7 @@ const RegisterPage = () => {
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Họ tên không được để trống!",
+                                        message: 'Họ tên không được để trống!',
                                     },
                                 ]}
                             >
@@ -91,7 +68,7 @@ const RegisterPage = () => {
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Email không được để trống!",
+                                        message: 'Email không được để trống!',
                                     },
                                 ]}
                             >
@@ -105,8 +82,7 @@ const RegisterPage = () => {
                                 rules={[
                                     {
                                         required: true,
-                                        message:
-                                            "Mật khẩu không được để trống!",
+                                        message: 'Mật khẩu không được để trống!',
                                     },
                                 ]}
                             >
@@ -119,7 +95,7 @@ const RegisterPage = () => {
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Tuổi không được để trống!",
+                                        message: 'Tuổi không được để trống!',
                                     },
                                 ]}
                             >
@@ -133,8 +109,7 @@ const RegisterPage = () => {
                                 rules={[
                                     {
                                         required: true,
-                                        message:
-                                            "Giới tính không được để trống!",
+                                        message: 'Giới tính không được để trống!',
                                     },
                                 ]}
                             >
@@ -152,7 +127,7 @@ const RegisterPage = () => {
                                 rules={[
                                     {
                                         required: true,
-                                        message: "Địa chỉ không được để trống!",
+                                        message: 'Địa chỉ không được để trống!',
                                     },
                                 ]}
                             >
@@ -162,17 +137,13 @@ const RegisterPage = () => {
                             <Form.Item
                             // wrapperCol={{ offset: 6, span: 16 }}
                             >
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    loading={isSubmit}
-                                >
+                                <Button type="primary" htmlType="submit" loading={isSubmit}>
                                     Đăng ký
                                 </Button>
                             </Form.Item>
                             <Divider> Or </Divider>
                             <p className="text text-normal">
-                                {" "}
+                                {' '}
                                 Đã có tài khoản ?
                                 <span>
                                     <Link to="/login"> Đăng Nhập </Link>
@@ -183,7 +154,7 @@ const RegisterPage = () => {
                 </div>
             </main>
         </div>
-    );
-};
+    )
+}
 
-export default RegisterPage;
+export default RegisterPage

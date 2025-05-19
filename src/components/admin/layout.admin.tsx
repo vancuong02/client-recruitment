@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react'
 import {
     AppstoreOutlined,
     ExceptionOutlined,
@@ -10,91 +10,82 @@ import {
     AliwangwangOutlined,
     BugOutlined,
     ScheduleOutlined,
-} from "@ant-design/icons";
-import { Layout, Menu, Dropdown, Space, Avatar, Button } from "antd";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { callLogout } from "config/api";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { isMobile } from "react-device-detect";
-import type { MenuProps } from "antd";
-import { setLogoutAction } from "@/redux/slice/accountSlide";
-import { ALL_PERMISSIONS } from "@/config/permissions";
+} from '@ant-design/icons'
+import { Layout, Menu, Dropdown, Space, Avatar, Button } from 'antd'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { callLogout } from 'config/api'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { isMobile } from 'react-device-detect'
+import type { MenuProps } from 'antd'
+import { setLogoutAction } from '@/redux/slice/accountSlide'
+import { ALL_PERMISSIONS } from '@/config/permissions'
 
-const { Content, Sider } = Layout;
+const { Content, Sider } = Layout
 
 const LayoutAdmin = () => {
-    const location = useLocation();
+    const location = useLocation()
 
-    const [collapsed, setCollapsed] = useState(false);
-    const [activeMenu, setActiveMenu] = useState("");
-    const user = useAppSelector((state) => state.account.user);
+    const [collapsed, setCollapsed] = useState(false)
+    const [activeMenu, setActiveMenu] = useState('')
+    const user = useAppSelector((state) => state.account.user)
 
-    const permissions = useAppSelector(
-        (state) => state.account.user.permissions
-    );
+    const permissions = useAppSelector((state) => state.account.user.permissions)
 
-    const [menuItems, setMenuItems] = useState<MenuProps["items"]>([]);
+    const [menuItems, setMenuItems] = useState<MenuProps['items']>([])
 
-    const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
 
     useEffect(() => {
         if (permissions?.length) {
             const viewCompany = permissions.find(
                 (item) =>
-                    item.apiPath ===
-                        ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.apiPath &&
-                    item.method ===
-                        ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.method
-            );
+                    item.apiPath === ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.COMPANIES.GET_PAGINATE.method,
+            )
 
             const viewUser = permissions.find(
                 (item) =>
-                    item.apiPath ===
-                        ALL_PERMISSIONS.USERS.GET_PAGINATE.apiPath &&
-                    item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
-            );
+                    item.apiPath === ALL_PERMISSIONS.USERS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method,
+            )
 
             const viewJob = permissions.find(
                 (item) =>
-                    item.apiPath ===
-                        ALL_PERMISSIONS.JOBS.GET_PAGINATE.apiPath &&
-                    item.method === ALL_PERMISSIONS.JOBS.GET_PAGINATE.method
-            );
+                    item.apiPath === ALL_PERMISSIONS.JOBS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.JOBS.GET_PAGINATE.method,
+            )
 
             const viewResume = permissions.find(
                 (item) =>
-                    item.apiPath ===
-                        ALL_PERMISSIONS.RESUMES.GET_PAGINATE.apiPath &&
-                    item.method === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.method
-            );
+                    item.apiPath === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.RESUMES.GET_PAGINATE.method,
+            )
 
             const viewRole = permissions.find(
                 (item) =>
-                    item.apiPath ===
-                        ALL_PERMISSIONS.ROLES.GET_PAGINATE.apiPath &&
-                    item.method === ALL_PERMISSIONS.ROLES.GET_PAGINATE.method
-            );
+                    item.apiPath === ALL_PERMISSIONS.ROLES.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.ROLES.GET_PAGINATE.method,
+            )
 
             const viewPermission = permissions.find(
                 (item) =>
-                    item.apiPath ===
-                        ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath &&
-                    item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method
-            );
+                    item.apiPath === ALL_PERMISSIONS.PERMISSIONS.GET_PAGINATE.apiPath &&
+                    item.method === ALL_PERMISSIONS.USERS.GET_PAGINATE.method,
+            )
 
             const full = [
                 {
                     label: <Link to="/admin">Dashboard</Link>,
-                    key: "/admin",
+                    key: '/admin',
                     icon: <AppstoreOutlined />,
                 },
                 ...(viewCompany
                     ? [
                           {
                               label: <Link to="/admin/company">Company</Link>,
-                              key: "/admin/company",
+                              key: '/admin/company',
                               icon: <BankOutlined />,
                           },
                       ]
@@ -104,7 +95,7 @@ const LayoutAdmin = () => {
                     ? [
                           {
                               label: <Link to="/admin/user">User</Link>,
-                              key: "/admin/user",
+                              key: '/admin/user',
                               icon: <UserOutlined />,
                           },
                       ]
@@ -113,7 +104,7 @@ const LayoutAdmin = () => {
                     ? [
                           {
                               label: <Link to="/admin/job">Job</Link>,
-                              key: "/admin/job",
+                              key: '/admin/job',
                               icon: <ScheduleOutlined />,
                           },
                       ]
@@ -123,7 +114,7 @@ const LayoutAdmin = () => {
                     ? [
                           {
                               label: <Link to="/admin/resume">Resume</Link>,
-                              key: "/admin/resume",
+                              key: '/admin/resume',
                               icon: <AliwangwangOutlined />,
                           },
                       ]
@@ -131,10 +122,8 @@ const LayoutAdmin = () => {
                 ...(viewPermission
                     ? [
                           {
-                              label: (
-                                  <Link to="/admin/permission">Permission</Link>
-                              ),
-                              key: "/admin/permission",
+                              label: <Link to="/admin/permission">Permission</Link>,
+                              key: '/admin/permission',
                               icon: <ApiOutlined />,
                           },
                       ]
@@ -143,59 +132,51 @@ const LayoutAdmin = () => {
                     ? [
                           {
                               label: <Link to="/admin/role">Role</Link>,
-                              key: "/admin/role",
+                              key: '/admin/role',
                               icon: <ExceptionOutlined />,
                           },
                       ]
                     : []),
-            ];
+            ]
 
-            setMenuItems(full);
+            setMenuItems(full)
         }
-    }, [permissions]);
+    }, [permissions])
     useEffect(() => {
-        setActiveMenu(location.pathname);
-    }, [location]);
+        setActiveMenu(location.pathname)
+    }, [location])
 
     const handleLogout = async () => {
-        await callLogout();
-        navigate("/");
-        dispatch(setLogoutAction({}));
-    };
+        await callLogout()
+        navigate('/')
+        dispatch(setLogoutAction({}))
+    }
 
     const itemsDropdown = [
         {
-            label: <Link to={"/"}>Trang chủ</Link>,
-            key: "home",
+            label: <Link to={'/'}>Trang chủ</Link>,
+            key: 'home',
         },
         {
             label: (
-                <label
-                    style={{ cursor: "pointer" }}
-                    onClick={() => handleLogout()}
-                >
+                <label style={{ cursor: 'pointer' }} onClick={() => handleLogout()}>
                     Đăng xuất
                 </label>
             ),
-            key: "logout",
+            key: 'logout',
         },
-    ];
+    ]
 
     return (
         <>
-            <Layout style={{ minHeight: "100vh" }} className="layout-admin">
+            <Layout style={{ minHeight: '100vh' }} className="layout-admin">
                 {!isMobile ? (
-                    <Sider
-                        theme="light"
-                        collapsible
-                        collapsed={collapsed}
-                        onCollapse={(value) => setCollapsed(value)}
-                    >
+                    <Sider theme="light" collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
                         <div
                             style={{
                                 height: 32,
                                 margin: 16,
-                                textAlign: "center",
+                                textAlign: 'center',
                             }}
                         >
                             <BugOutlined /> ADMIN
@@ -221,8 +202,8 @@ const LayoutAdmin = () => {
                         <div
                             className="admin-header"
                             style={{
-                                display: "flex",
-                                justifyContent: "space-between",
+                                display: 'flex',
+                                justifyContent: 'space-between',
                                 marginRight: 20,
                             }}
                         >
@@ -230,34 +211,25 @@ const LayoutAdmin = () => {
                                 type="text"
                                 icon={
                                     collapsed
-                                        ? React.createElement(
-                                              MenuUnfoldOutlined
-                                          )
+                                        ? React.createElement(MenuUnfoldOutlined)
                                         : React.createElement(MenuFoldOutlined)
                                 }
                                 onClick={() => setCollapsed(!collapsed)}
                                 style={{
-                                    fontSize: "16px",
+                                    fontSize: '16px',
                                     width: 64,
                                     height: 64,
                                 }}
                             />
 
-                            <Dropdown
-                                menu={{ items: itemsDropdown }}
-                                trigger={["click"]}
-                            >
-                                <Space style={{ cursor: "pointer" }}>
-                                    <Avatar>
-                                        {user?.name
-                                            ?.substring(0, 2)
-                                            ?.toUpperCase()}
-                                    </Avatar>
+                            <Dropdown menu={{ items: itemsDropdown }} trigger={['click']}>
+                                <Space style={{ cursor: 'pointer' }}>
+                                    <Avatar>{user?.name?.substring(0, 2)?.toUpperCase()}</Avatar>
                                 </Space>
                             </Dropdown>
                         </div>
                     )}
-                    <Content style={{ padding: "15px" }}>
+                    <Content style={{ padding: '15px' }}>
                         <Outlet />
                     </Content>
                     {/* <Footer style={{ padding: 10, textAlign: 'center' }}>
@@ -266,7 +238,7 @@ const LayoutAdmin = () => {
                 </Layout>
             </Layout>
         </>
-    );
-};
+    )
+}
 
-export default LayoutAdmin;
+export default LayoutAdmin

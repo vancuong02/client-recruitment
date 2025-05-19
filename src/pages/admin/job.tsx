@@ -1,171 +1,149 @@
-import {
-    ActionType,
-    ProColumns,
-    ProFormSelect,
-} from "@ant-design/pro-components";
-import dayjs from "dayjs";
-import { useRef } from "react";
-import queryString from "query-string";
-import { useNavigate } from "react-router-dom";
-import { Button, Popconfirm, Space, Tag, message, notification } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { ActionType, ProColumns, ProFormSelect } from '@ant-design/pro-components'
+import dayjs from 'dayjs'
+import { useRef } from 'react'
+import queryString from 'query-string'
+import { useNavigate } from 'react-router-dom'
+import { Button, Popconfirm, Space, Tag, message, notification } from 'antd'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 
-import { IJob } from "@/types/backend";
-import { callDeleteJob } from "@/config/api";
-import Access from "@/components/share/access";
-import { fetchJob } from "@/redux/slice/jobSlide";
-import { ALL_PERMISSIONS } from "@/config/permissions";
-import DataTable from "@/components/client/data-table";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { IJob } from '@/types/backend'
+import { callDeleteJob } from '@/config/api'
+import Access from '@/components/share/access'
+import { fetchJob } from '@/redux/slice/jobSlide'
+import { ALL_PERMISSIONS } from '@/config/permissions'
+import DataTable from '@/components/client/data-table'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 
 const JobPage = () => {
-    const tableRef = useRef<ActionType>();
-    const navigate = useNavigate();
-    const dispatch = useAppDispatch();
-    const meta = useAppSelector((state) => state.job.meta);
-    const jobs = useAppSelector((state) => state.job.result);
-    const isFetching = useAppSelector((state) => state.job.isFetching);
+    const tableRef = useRef<ActionType>()
+    const navigate = useNavigate()
+    const dispatch = useAppDispatch()
+    const meta = useAppSelector((state) => state.job.meta)
+    const jobs = useAppSelector((state) => state.job.result)
+    const isFetching = useAppSelector((state) => state.job.isFetching)
 
     const handleDeleteJob = async (_id: string | undefined) => {
         if (_id) {
-            const res = await callDeleteJob(_id);
+            const res = await callDeleteJob(_id)
             if (res && res.data) {
-                message.success("Xóa Job thành công");
-                reloadTable();
+                message.success('Xóa Job thành công')
+                reloadTable()
             } else {
                 notification.error({
-                    message: "Có lỗi xảy ra",
+                    message: 'Có lỗi xảy ra',
                     description: res.message,
-                });
+                })
             }
         }
-    };
+    }
 
     const reloadTable = () => {
-        tableRef?.current?.reload();
-    };
+        tableRef?.current?.reload()
+    }
 
     const columns: ProColumns<IJob>[] = [
         {
-            title: "STT",
-            key: "index",
+            title: 'STT',
+            key: 'index',
             width: 50,
-            align: "center",
+            align: 'center',
             render: (text, record, index) => {
-                return <>{index + 1 + (meta.current - 1) * meta.pageSize}</>;
+                return <>{index + 1 + (meta.current - 1) * meta.pageSize}</>
             },
             hideInSearch: true,
         },
         {
-            title: "Tên Job",
-            dataIndex: "name",
+            title: 'Tên Job',
+            dataIndex: 'name',
             sorter: true,
         },
         {
-            title: "Mức lương",
-            dataIndex: "salary",
+            title: 'Mức lương',
+            dataIndex: 'salary',
             sorter: true,
         },
         {
-            title: "Level",
-            dataIndex: "levels",
+            title: 'Level',
+            dataIndex: 'levels',
             render: (_: any, record: IJob) => {
                 return (
                     <Space>
                         {record.levels?.map((item, index) => {
                             return (
-                                <Tag
-                                    style={{ margin: 0 }}
-                                    color="processing"
-                                    key={index}
-                                >
+                                <Tag style={{ margin: 0 }} color="processing" key={index}>
                                     {item}
                                 </Tag>
-                            );
+                            )
                         })}
                     </Space>
-                );
+                )
             },
         },
         {
-            title: "Trạng thái",
-            dataIndex: "isActive",
+            title: 'Trạng thái',
+            dataIndex: 'isActive',
             render(dom, entity, index, action, schema) {
                 return (
                     <>
-                        <Tag color={entity.isActive ? "lime" : "red"}>
-                            {entity.isActive ? "ACTIVE" : "INACTIVE"}
-                        </Tag>
+                        <Tag color={entity.isActive ? 'lime' : 'red'}>{entity.isActive ? 'ACTIVE' : 'INACTIVE'}</Tag>
                     </>
-                );
+                )
             },
             hideInSearch: true,
         },
 
         {
-            title: "CreatedAt",
-            dataIndex: "createdAt",
+            title: 'CreatedAt',
+            dataIndex: 'createdAt',
             width: 200,
             sorter: true,
             render: (text, record, index, action) => {
-                return (
-                    <>{dayjs(record.createdAt).format("DD-MM-YYYY HH:mm:ss")}</>
-                );
+                return <>{dayjs(record.createdAt).format('DD-MM-YYYY HH:mm:ss')}</>
             },
             hideInSearch: true,
         },
         {
-            title: "UpdatedAt",
-            dataIndex: "updatedAt",
+            title: 'UpdatedAt',
+            dataIndex: 'updatedAt',
             width: 200,
             sorter: true,
             render: (text, record, index, action) => {
-                return (
-                    <>{dayjs(record.updatedAt).format("DD-MM-YYYY HH:mm:ss")}</>
-                );
+                return <>{dayjs(record.updatedAt).format('DD-MM-YYYY HH:mm:ss')}</>
             },
             hideInSearch: true,
         },
         {
-            title: "Chức năng",
+            title: 'Chức năng',
             hideInSearch: true,
             width: 50,
             render: (_value, entity, _index, _action) => (
                 <Space>
-                    <Access
-                        permission={ALL_PERMISSIONS.JOBS.UPDATE}
-                        hideChildren
-                    >
+                    <Access permission={ALL_PERMISSIONS.JOBS.UPDATE} hideChildren>
                         <EditOutlined
                             style={{
                                 fontSize: 20,
-                                color: "#ffa500",
+                                color: '#ffa500',
                             }}
                             type=""
                             onClick={() => {
-                                navigate(`/admin/job/upsert?id=${entity._id}`);
+                                navigate(`/admin/job/upsert?id=${entity._id}`)
                             }}
                         />
                     </Access>
-                    <Access
-                        permission={ALL_PERMISSIONS.JOBS.DELETE}
-                        hideChildren
-                    >
+                    <Access permission={ALL_PERMISSIONS.JOBS.DELETE} hideChildren>
                         <Popconfirm
                             placement="leftTop"
-                            title={"Xác nhận xóa job"}
-                            description={"Bạn có chắc chắn muốn xóa job này ?"}
+                            title={'Xác nhận xóa job'}
+                            description={'Bạn có chắc chắn muốn xóa job này ?'}
                             onConfirm={() => handleDeleteJob(entity._id)}
                             okText="Xác nhận"
                             cancelText="Hủy"
                         >
-                            <span
-                                style={{ cursor: "pointer", margin: "0 10px" }}
-                            >
+                            <span style={{ cursor: 'pointer', margin: '0 10px' }}>
                                 <DeleteOutlined
                                     style={{
                                         fontSize: 20,
-                                        color: "#ff4d4f",
+                                        color: '#ff4d4f',
                                     }}
                                 />
                             </span>
@@ -174,47 +152,41 @@ const JobPage = () => {
                 </Space>
             ),
         },
-    ];
+    ]
 
     const buildQuery = (params: any, sort: any, filter: any) => {
-        const clone = { ...params };
-        if (clone.name) clone.name = `/${clone.name}/i`;
-        if (clone.salary) clone.salary = `/${clone.salary}/i`;
+        const clone = { ...params }
+        if (clone.name) clone.name = `/${clone.name}/i`
+        if (clone.salary) clone.salary = `/${clone.salary}/i`
         if (clone?.level?.length) {
-            clone.level = clone.level.join(",");
+            clone.level = clone.level.join(',')
         }
 
-        let temp = queryString.stringify(clone);
+        let temp = queryString.stringify(clone)
 
-        let sortBy = "";
+        let sortBy = ''
         if (sort && sort.name) {
-            sortBy = sort.name === "ascend" ? "sort=name" : "sort=-name";
+            sortBy = sort.name === 'ascend' ? 'sort=name' : 'sort=-name'
         }
         if (sort && sort.salary) {
-            sortBy = sort.salary === "ascend" ? "sort=salary" : "sort=-salary";
+            sortBy = sort.salary === 'ascend' ? 'sort=salary' : 'sort=-salary'
         }
         if (sort && sort.createdAt) {
-            sortBy =
-                sort.createdAt === "ascend"
-                    ? "sort=createdAt"
-                    : "sort=-createdAt";
+            sortBy = sort.createdAt === 'ascend' ? 'sort=createdAt' : 'sort=-createdAt'
         }
         if (sort && sort.updatedAt) {
-            sortBy =
-                sort.updatedAt === "ascend"
-                    ? "sort=updatedAt"
-                    : "sort=-updatedAt";
+            sortBy = sort.updatedAt === 'ascend' ? 'sort=updatedAt' : 'sort=-updatedAt'
         }
 
         //mặc định sort theo updatedAt
         if (Object.keys(sortBy).length === 0) {
-            temp = `${temp}&sort=-updatedAt`;
+            temp = `${temp}&sort=-updatedAt`
         } else {
-            temp = `${temp}&${sortBy}`;
+            temp = `${temp}&${sortBy}`
         }
 
-        return temp;
-    };
+        return temp
+    }
 
     return (
         <div>
@@ -227,8 +199,8 @@ const JobPage = () => {
                     columns={columns}
                     dataSource={jobs}
                     request={async (params, sort, filter): Promise<any> => {
-                        const query = buildQuery(params, sort, filter);
-                        dispatch(fetchJob({ query }));
+                        const query = buildQuery(params, sort, filter)
+                        dispatch(fetchJob({ query }))
                     }}
                     scroll={{ x: true }}
                     pagination={{
@@ -239,28 +211,24 @@ const JobPage = () => {
                         showTotal: (total, range) => {
                             return (
                                 <div>
-                                    {" "}
+                                    {' '}
                                     {range[0]}-{range[1]} trên {total} rows
                                 </div>
-                            );
+                            )
                         },
                     }}
                     rowSelection={false}
                     toolBarRender={(_action, _rows): any => {
                         return (
-                            <Button
-                                icon={<PlusOutlined />}
-                                type="primary"
-                                onClick={() => navigate("upsert")}
-                            >
+                            <Button icon={<PlusOutlined />} type="primary" onClick={() => navigate('upsert')}>
                                 Thêm mới
                             </Button>
-                        );
+                        )
                     }}
                 />
             </Access>
         </div>
-    );
-};
+    )
+}
 
-export default JobPage;
+export default JobPage

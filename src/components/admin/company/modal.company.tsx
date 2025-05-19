@@ -1,231 +1,187 @@
-import {
-    CheckSquareOutlined,
-    LoadingOutlined,
-    PlusOutlined,
-} from "@ant-design/icons";
-import {
-    FooterToolbar,
-    ModalForm,
-    ProCard,
-    ProFormText,
-    ProFormTextArea,
-} from "@ant-design/pro-components";
-import {
-    Col,
-    ConfigProvider,
-    Form,
-    Modal,
-    Row,
-    Upload,
-    message,
-    notification,
-} from "antd";
-import "styles/reset.scss";
-import { isMobile } from "react-device-detect";
-import { Editor } from "@tinymce/tinymce-react";
-import { useEffect, useRef, useState } from "react";
-import {
-    callCreateCompany,
-    callUpdateCompany,
-    callUploadSingleFile,
-} from "@/config/api";
-import { ICompany } from "@/types/backend";
-import { v4 as uuidv4 } from "uuid";
-import enUS from "antd/lib/locale/en_US";
+import { CheckSquareOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons'
+import { FooterToolbar, ModalForm, ProCard, ProFormText, ProFormTextArea } from '@ant-design/pro-components'
+import { Col, ConfigProvider, Form, Modal, Row, Upload, message, notification } from 'antd'
+import 'styles/reset.scss'
+import { isMobile } from 'react-device-detect'
+import { Editor } from '@tinymce/tinymce-react'
+import { useEffect, useRef, useState } from 'react'
+import { callCreateCompany, callUpdateCompany, callUploadSingleFile } from '@/config/api'
+import { ICompany } from '@/types/backend'
+import { v4 as uuidv4 } from 'uuid'
+import enUS from 'antd/lib/locale/en_US'
 
 interface IProps {
-    openModal: boolean;
-    setOpenModal: (v: boolean) => void;
-    dataInit?: ICompany | null;
-    setDataInit: (v: any) => void;
-    reloadTable: () => void;
+    openModal: boolean
+    setOpenModal: (v: boolean) => void
+    dataInit?: ICompany | null
+    setDataInit: (v: any) => void
+    reloadTable: () => void
 }
 
 interface ICompanyForm {
-    name: string;
-    location: string;
+    name: string
+    location: string
 }
 
 interface ICompanyLogo {
-    name: string;
-    uid: string;
+    name: string
+    uid: string
 }
 
 const ModalCompany = (props: IProps) => {
-    const editorRef = useRef(null);
+    const editorRef = useRef(null)
 
-    const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } =
-        props;
+    const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } = props
     //modal animation
-    const [animation, setAnimation] = useState<string>("open");
+    const [animation, setAnimation] = useState<string>('open')
 
-    const [loadingUpload, setLoadingUpload] = useState<boolean>(false);
-    const [dataLogo, setDataLogo] = useState<ICompanyLogo[]>([]);
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState("");
-    const [previewTitle, setPreviewTitle] = useState("");
+    const [loadingUpload, setLoadingUpload] = useState<boolean>(false)
+    const [dataLogo, setDataLogo] = useState<ICompanyLogo[]>([])
+    const [previewOpen, setPreviewOpen] = useState(false)
+    const [previewImage, setPreviewImage] = useState('')
+    const [previewTitle, setPreviewTitle] = useState('')
 
-    const [value, setValue] = useState<string>("");
-    const [form] = Form.useForm();
+    const [value, setValue] = useState<string>('')
+    const [form] = Form.useForm()
 
     useEffect(() => {
         if (dataInit?._id && dataInit?.description) {
-            setValue(dataInit.description);
+            setValue(dataInit.description)
         }
-    }, [dataInit]);
+    }, [dataInit])
 
     const submitCompany = async (valuesForm: ICompanyForm) => {
-        const { name, location } = valuesForm;
-        const logoUrl =
-            dataLogo.length > 0 ? dataLogo[0].name : dataInit?.logo ?? "";
+        const { name, location } = valuesForm
+        const logoUrl = dataLogo.length > 0 ? dataLogo[0].name : (dataInit?.logo ?? '')
 
         if (dataInit?._id) {
             //update
-            const res = await callUpdateCompany(
-                dataInit._id,
-                name,
-                location,
-                value,
-                logoUrl
-            );
+            const res = await callUpdateCompany(dataInit._id, name, location, value, logoUrl)
             if (res.data) {
-                message.success(res.message);
-                handleReset();
-                reloadTable();
+                message.success(res.message)
+                handleReset()
+                reloadTable()
             } else {
                 notification.error({
-                    message: "Có lỗi xảy ra",
+                    message: 'Có lỗi xảy ra',
                     description: res.message,
-                });
+                })
             }
         } else {
             //create
-            const res = await callCreateCompany(name, location, value, logoUrl);
+            const res = await callCreateCompany(name, location, value, logoUrl)
             if (res.data) {
-                message.success(res.message);
-                handleReset();
-                reloadTable();
+                message.success(res.message)
+                handleReset()
+                reloadTable()
             } else {
                 notification.error({
-                    message: "Có lỗi xảy ra",
+                    message: 'Có lỗi xảy ra',
                     description: res.message,
-                });
+                })
             }
         }
-    };
+    }
 
     const handleReset = async () => {
-        form.resetFields();
-        setValue("");
-        setDataInit(null);
+        form.resetFields()
+        setValue('')
+        setDataInit(null)
 
         //add animation when closing modal
-        setAnimation("close");
-        await new Promise((r) => setTimeout(r, 400));
-        setOpenModal(false);
-        setAnimation("open");
-    };
+        setAnimation('close')
+        await new Promise((r) => setTimeout(r, 400))
+        setOpenModal(false)
+        setAnimation('open')
+    }
 
     const handleRemoveFile = (file: any) => {
-        setDataLogo([]);
-    };
+        setDataLogo([])
+    }
 
     const handlePreview = async (file: any) => {
         if (!file.originFileObj) {
-            setPreviewImage(file.url);
-            setPreviewOpen(true);
-            setPreviewTitle(
-                file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-            );
-            return;
+            setPreviewImage(file.url)
+            setPreviewOpen(true)
+            setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1))
+            return
         }
         getBase64(file.originFileObj, (url: string) => {
-            setPreviewImage(url);
-            setPreviewOpen(true);
-            setPreviewTitle(
-                file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-            );
-        });
-    };
+            setPreviewImage(url)
+            setPreviewOpen(true)
+            setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1))
+        })
+    }
 
     const getBase64 = (img: any, callback: any) => {
-        const reader = new FileReader();
-        reader.addEventListener("load", () => callback(reader.result));
-        reader.readAsDataURL(img);
-    };
+        const reader = new FileReader()
+        reader.addEventListener('load', () => callback(reader.result))
+        reader.readAsDataURL(img)
+    }
 
     const beforeUpload = (file: any) => {
         const isJpgOrPng =
-            file.type === "image/jpeg" ||
-            file.type === "image/png" ||
-            file.type === "image/jpg" ||
-            file.type === "image/gif" ||
-            file.type === "image/webp";
+            file.type === 'image/jpeg' ||
+            file.type === 'image/png' ||
+            file.type === 'image/jpg' ||
+            file.type === 'image/gif' ||
+            file.type === 'image/webp'
         if (!isJpgOrPng) {
-            message.error("You can only upload JPG/PNG file!");
+            message.error('You can only upload JPG/PNG file!')
         }
-        const isLt2M = file.size / 1024 / 1024 < 5;
+        const isLt2M = file.size / 1024 / 1024 < 5
         if (!isLt2M) {
-            message.error("Image must smaller than 2MB!");
+            message.error('Image must smaller than 2MB!')
         }
-        return isJpgOrPng && isLt2M;
-    };
+        return isJpgOrPng && isLt2M
+    }
 
     const handleChange = (info: any) => {
-        if (info.file.status === "uploading") {
-            setLoadingUpload(true);
+        if (info.file.status === 'uploading') {
+            setLoadingUpload(true)
         }
-        if (info.file.status === "done") {
-            setLoadingUpload(false);
+        if (info.file.status === 'done') {
+            setLoadingUpload(false)
         }
-        if (info.file.status === "error") {
-            setLoadingUpload(false);
-            message.error(
-                info?.file?.error?.event?.message ??
-                    "Đã có lỗi xảy ra khi upload file."
-            );
+        if (info.file.status === 'error') {
+            setLoadingUpload(false)
+            message.error(info?.file?.error?.event?.message ?? 'Đã có lỗi xảy ra khi upload file.')
         }
-    };
+    }
 
     const handleUploadFileLogo = async ({ file, onSuccess, onError }: any) => {
-        const res = await callUploadSingleFile(file, "company");
+        const res = await callUploadSingleFile(file, 'company')
         if (res && res.data) {
             setDataLogo([
                 {
                     name: res.data.fileUrl,
                     uid: uuidv4(),
                 },
-            ]);
-            if (onSuccess) onSuccess("ok");
+            ])
+            if (onSuccess) onSuccess('ok')
         } else {
             if (onError) {
-                setDataLogo([]);
-                const error = new Error(res.message);
-                onError({ event: error });
+                setDataLogo([])
+                const error = new Error(res.message)
+                onError({ event: error })
             }
         }
-    };
+    }
 
     return (
         <>
             {openModal && (
                 <>
                     <ModalForm
-                        title={
-                            <>
-                                {dataInit?._id
-                                    ? "Cập nhật Company"
-                                    : "Tạo mới Company"}
-                            </>
-                        }
+                        title={<>{dataInit?._id ? 'Cập nhật Company' : 'Tạo mới Company'}</>}
                         open={openModal}
                         modalProps={{
                             onCancel: () => {
-                                handleReset();
+                                handleReset()
                             },
                             afterClose: () => handleReset(),
                             destroyOnClose: true,
-                            width: isMobile ? "100%" : 900,
+                            width: isMobile ? '100%' : 900,
                             footer: null,
                             keyboard: false,
                             maskClosable: false,
@@ -238,19 +194,13 @@ const ModalCompany = (props: IProps) => {
                         onFinish={submitCompany}
                         initialValues={dataInit?._id ? dataInit : {}}
                         submitter={{
-                            render: (_: any, dom: any) => (
-                                <FooterToolbar>{dom}</FooterToolbar>
-                            ),
+                            render: (_: any, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
                             submitButtonProps: {
                                 icon: <CheckSquareOutlined />,
                             },
                             searchConfig: {
-                                resetText: "Hủy",
-                                submitText: (
-                                    <>
-                                        {dataInit?._id ? "Cập nhật" : "Tạo mới"}
-                                    </>
-                                ),
+                                resetText: 'Hủy',
+                                submitText: <>{dataInit?._id ? 'Cập nhật' : 'Tạo mới'}</>,
                             },
                         }}
                     >
@@ -262,7 +212,7 @@ const ModalCompany = (props: IProps) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng không bỏ trống",
+                                            message: 'Vui lòng không bỏ trống',
                                         },
                                     ]}
                                     placeholder="Nhập tên công ty"
@@ -276,22 +226,17 @@ const ModalCompany = (props: IProps) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng không bỏ trống",
+                                            message: 'Vui lòng không bỏ trống',
                                             validator: () => {
                                                 // Kiểm tra nếu đang ở chế độ update và đã có logo từ trước
-                                                if (
-                                                    dataInit?._id &&
-                                                    dataInit?.logo
-                                                ) {
-                                                    return Promise.resolve();
+                                                if (dataInit?._id && dataInit?.logo) {
+                                                    return Promise.resolve()
                                                 }
                                                 // Kiểm tra nếu có file mới upload
                                                 if (dataLogo.length > 0) {
-                                                    return Promise.resolve();
+                                                    return Promise.resolve()
                                                 }
-                                                return Promise.reject(
-                                                    "Vui lòng không bỏ trống"
-                                                );
+                                                return Promise.reject('Vui lòng không bỏ trống')
                                             },
                                         },
                                     ]}
@@ -306,19 +251,15 @@ const ModalCompany = (props: IProps) => {
                                             customRequest={handleUploadFileLogo}
                                             beforeUpload={beforeUpload}
                                             onChange={handleChange}
-                                            onRemove={(file) =>
-                                                handleRemoveFile(file)
-                                            }
+                                            onRemove={(file) => handleRemoveFile(file)}
                                             onPreview={handlePreview}
                                             defaultFileList={
                                                 dataInit?._id
                                                     ? [
                                                           {
                                                               uid: uuidv4(),
-                                                              name:
-                                                                  dataInit?.logo ??
-                                                                  "",
-                                                              status: "done",
+                                                              name: dataInit?.logo ?? '',
+                                                              status: 'done',
                                                               url: `${dataInit?.logo}`,
                                                           },
                                                       ]
@@ -326,14 +267,8 @@ const ModalCompany = (props: IProps) => {
                                             }
                                         >
                                             <div>
-                                                {loadingUpload ? (
-                                                    <LoadingOutlined />
-                                                ) : (
-                                                    <PlusOutlined />
-                                                )}
-                                                <div style={{ marginTop: 8 }}>
-                                                    Upload
-                                                </div>
+                                                {loadingUpload ? <LoadingOutlined /> : <PlusOutlined />}
+                                                <div style={{ marginTop: 8 }}>Upload</div>
                                             </div>
                                         </Upload>
                                     </ConfigProvider>
@@ -347,7 +282,7 @@ const ModalCompany = (props: IProps) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng không bỏ trống",
+                                            message: 'Vui lòng không bỏ trống',
                                         },
                                     ]}
                                     placeholder="Nhập địa chỉ công ty"
@@ -359,25 +294,18 @@ const ModalCompany = (props: IProps) => {
 
                             <ProCard
                                 title="Miêu tả"
-                                headStyle={{ color: "#d81921" }}
+                                headStyle={{ color: '#d81921' }}
                                 style={{ marginBottom: 20 }}
                                 headerBordered
                                 size="default"
                                 bordered
                             >
                                 <Editor
-                                    apiKey={
-                                        import.meta.env.VITE_API_KEY_TINYMCE
-                                    }
-                                    onEditorChange={(
-                                        content: any,
-                                        editor: any
-                                    ) => {
-                                        setValue(content);
+                                    apiKey={import.meta.env.VITE_API_KEY_TINYMCE}
+                                    onEditorChange={(content: any, editor: any) => {
+                                        setValue(content)
                                     }}
-                                    onInit={(evt: any, editor: any) =>
-                                        (editorRef.current = editor)
-                                    }
+                                    onInit={(evt: any, editor: any) => (editorRef.current = editor)}
                                     initialValue={dataInit?.description}
                                     init={{
                                         height: 500,
@@ -385,32 +313,32 @@ const ModalCompany = (props: IProps) => {
                                         statusbar: false,
                                         branding: false,
                                         plugins: [
-                                            "advlist",
-                                            "autolink",
-                                            "lists",
-                                            "link",
-                                            "image",
-                                            "charmap",
-                                            "preview",
-                                            "anchor",
-                                            "searchreplace",
-                                            "visualblocks",
-                                            "code",
-                                            "fullscreen",
-                                            "insertdatetime",
-                                            "media",
-                                            "table",
-                                            "code",
-                                            "help",
-                                            "wordcount",
+                                            'advlist',
+                                            'autolink',
+                                            'lists',
+                                            'link',
+                                            'image',
+                                            'charmap',
+                                            'preview',
+                                            'anchor',
+                                            'searchreplace',
+                                            'visualblocks',
+                                            'code',
+                                            'fullscreen',
+                                            'insertdatetime',
+                                            'media',
+                                            'table',
+                                            'code',
+                                            'help',
+                                            'wordcount',
                                         ],
                                         toolbar:
-                                            "undo redo | blocks | " +
-                                            "bold italic forecolor | alignleft aligncenter " +
-                                            "alignright alignjustify | bullist numlist outdent indent | " +
-                                            "removeformat | help",
+                                            'undo redo | blocks | ' +
+                                            'bold italic forecolor | alignleft aligncenter ' +
+                                            'alignright alignjustify | bullist numlist outdent indent | ' +
+                                            'removeformat | help',
                                         content_style:
-                                            "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                                            'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
                                     }}
                                 />
                             </ProCard>
@@ -423,16 +351,12 @@ const ModalCompany = (props: IProps) => {
                         onCancel={() => setPreviewOpen(false)}
                         style={{ zIndex: 1500 }}
                     >
-                        <img
-                            alt="example"
-                            style={{ width: "100%" }}
-                            src={previewImage}
-                        />
+                        <img alt="example" style={{ width: '100%' }} src={previewImage} />
                     </Modal>
                 </>
             )}
         </>
-    );
-};
+    )
+}
 
-export default ModalCompany;
+export default ModalCompany

@@ -1,59 +1,54 @@
-import {
-    createBrowserRouter,
-    Outlet,
-    RouterProvider,
-    useLocation,
-} from "react-router-dom";
-import { useEffect } from "react";
-import NotFound from "components/share/not.found";
-import LoginPage from "pages/auth/login";
-import RegisterPage from "pages/auth/register";
-import LayoutAdmin from "components/admin/layout.admin";
-import ProtectedRoute from "components/share/protected-route.ts";
-import Header from "components/client/header.client";
-import Footer from "components/client/footer.client";
-import HomePage from "pages/home";
-import styles from "styles/app.module.scss";
-import DashboardPage from "./pages/admin/dashboard";
-import CompanyPage from "./pages/admin/company";
-import PermissionPage from "./pages/admin/permission";
-import ResumePage from "./pages/admin/resume";
-import RolePage from "./pages/admin/role";
-import UserPage from "./pages/admin/user";
-import LayoutApp from "./components/share/layout.app";
-import JobPage from "./pages/admin/job";
-import ViewUpsertJob from "./components/admin/job/upsert.job";
-import ClientJobPage from "./pages/job";
-import ClientJobDetailPage from "./pages/job/detail";
-import ClientCompanyPage from "./pages/company";
-import ClientCompanyDetailPage from "./pages/company/detail";
+import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import NotFound from 'components/share/not.found'
+import LoginPage from 'pages/auth/login'
+import RegisterPage from 'pages/auth/register'
+import LayoutAdmin from 'components/admin/layout.admin'
+import ProtectedRoute from 'components/share/protected-route.ts'
+import Header from 'components/client/header.client'
+import Footer from 'components/client/footer.client'
+import HomePage from 'pages/home'
+import styles from 'styles/app.module.scss'
+import DashboardPage from './pages/admin/dashboard'
+import CompanyPage from './pages/admin/company'
+import PermissionPage from './pages/admin/permission'
+import ResumePage from './pages/admin/resume'
+import RolePage from './pages/admin/role'
+import UserPage from './pages/admin/user'
+import LayoutApp from './components/share/layout.app'
+import JobPage from './pages/admin/job'
+import ViewUpsertJob from './components/admin/job/upsert.job'
+import ClientJobPage from './pages/job'
+import ClientJobDetailPage from './pages/job/detail'
+import ClientCompanyPage from './pages/company'
+import ClientCompanyDetailPage from './pages/company/detail'
 
 const LayoutClient = () => {
-    const location = useLocation();
+    const location = useLocation()
 
     useEffect(() => {
         window.scrollTo({
             top: 0,
             left: 0,
-            behavior: "smooth",
-        });
-    }, [location]);
+            behavior: 'smooth',
+        })
+    }, [location])
 
     return (
         <div className="layout-app">
             <Header />
-            <div className={styles["content-app"]}>
+            <div className={styles['content-app']}>
                 <Outlet />
             </div>
             <Footer />
         </div>
-    );
-};
+    )
+}
 
 export default function App() {
     const router = createBrowserRouter([
         {
-            path: "/",
+            path: '/',
             element: (
                 <LayoutApp>
                     <LayoutClient />
@@ -62,18 +57,18 @@ export default function App() {
             errorElement: <NotFound />,
             children: [
                 { index: true, element: <HomePage /> },
-                { path: "job", element: <ClientJobPage /> },
-                { path: "job/:id", element: <ClientJobDetailPage /> },
-                { path: "company", element: <ClientCompanyPage /> },
-                { path: "company/:id", element: <ClientCompanyDetailPage /> },
+                { path: 'job', element: <ClientJobPage /> },
+                { path: 'job/:id', element: <ClientJobDetailPage /> },
+                { path: 'company', element: <ClientCompanyPage /> },
+                { path: 'company/:id', element: <ClientCompanyDetailPage /> },
             ],
         },
 
         {
-            path: "/admin",
+            path: '/admin',
             element: (
                 <LayoutApp>
-                    <LayoutAdmin />{" "}
+                    <LayoutAdmin />
                 </LayoutApp>
             ),
             errorElement: <NotFound />,
@@ -87,7 +82,7 @@ export default function App() {
                     ),
                 },
                 {
-                    path: "company",
+                    path: 'company',
                     element: (
                         <ProtectedRoute>
                             <CompanyPage />
@@ -95,7 +90,7 @@ export default function App() {
                     ),
                 },
                 {
-                    path: "user",
+                    path: 'user',
                     element: (
                         <ProtectedRoute>
                             <UserPage />
@@ -104,19 +99,19 @@ export default function App() {
                 },
 
                 {
-                    path: "job",
+                    path: 'job',
                     children: [
                         {
                             index: true,
                             element: (
                                 <ProtectedRoute>
-                                    {" "}
+                                    {' '}
                                     <JobPage />
                                 </ProtectedRoute>
                             ),
                         },
                         {
-                            path: "upsert",
+                            path: 'upsert',
                             element: (
                                 <ProtectedRoute>
                                     <ViewUpsertJob />
@@ -127,7 +122,7 @@ export default function App() {
                 },
 
                 {
-                    path: "resume",
+                    path: 'resume',
                     element: (
                         <ProtectedRoute>
                             <ResumePage />
@@ -135,7 +130,7 @@ export default function App() {
                     ),
                 },
                 {
-                    path: "permission",
+                    path: 'permission',
                     element: (
                         <ProtectedRoute>
                             <PermissionPage />
@@ -143,7 +138,7 @@ export default function App() {
                     ),
                 },
                 {
-                    path: "role",
+                    path: 'role',
                     element: (
                         <ProtectedRoute>
                             <RolePage />
@@ -154,19 +149,19 @@ export default function App() {
         },
 
         {
-            path: "/login",
+            path: '/login',
             element: <LoginPage />,
         },
 
         {
-            path: "/register",
+            path: '/register',
             element: <RegisterPage />,
         },
-    ]);
+    ])
 
     return (
         <>
             <RouterProvider router={router} />
         </>
-    );
+    )
 }

@@ -8,6 +8,7 @@
     "scripts": {
         "dev": "vite",
         "start": "vite",
+        "format": "prettier --write \"src/**/*.{ts,tsx,scss,css,json}\"",
         "build": "tsc && vite build",
         "preview": "vite preview"
     },
@@ -44,6 +45,7 @@
         "@types/react-router-dom": "5.3.3",
         "@types/uuid": "9.0.2",
         "@vitejs/plugin-react-swc": "3.0.0",
+        "prettier": "^3.5.3",
         "rollup-plugin-visualizer": "5.9.0",
         "sass": "1.62.1",
         "typescript": "5.3.3",

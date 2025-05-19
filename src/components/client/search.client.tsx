@@ -1,34 +1,28 @@
-import { Button, Col, Form, Row, Select } from "antd";
-import { FilterTwoTone } from "@ant-design/icons";
-import {
-    LEVEL_LIST,
-    LOCATION_LIST,
-    SKILLS_LIST,
-    TYPE_CONTRACT_LIST,
-    TYPE_WORK_LIST,
-} from "@/config/utils";
-import { ProForm } from "@ant-design/pro-components";
-import { FaSearch } from "react-icons/fa";
-import styles from "styles/client.module.scss";
-import { useNavigate } from "react-router-dom";
+import { Button, Col, Form, Row, Select } from 'antd'
+import { FilterTwoTone } from '@ant-design/icons'
+import { LEVEL_LIST, LOCATION_LIST, SKILLS_LIST, TYPE_CONTRACT_LIST, TYPE_WORK_LIST } from '@/config/utils'
+import { ProForm } from '@ant-design/pro-components'
+import { FaSearch } from 'react-icons/fa'
+import styles from 'styles/client.module.scss'
+import { useNavigate } from 'react-router-dom'
 
 interface SearchQuery {
-    skills?: string[];
-    location?: string;
-    levels?: string[];
-    typeWorks?: string[];
-    typeContracts?: string[];
+    skills?: string[]
+    location?: string
+    levels?: string[]
+    typeWorks?: string[]
+    typeContracts?: string[]
 }
 
 const SearchClient = () => {
-    const optionsSkills = SKILLS_LIST;
-    const optionsLocations = LOCATION_LIST;
-    const optiontypeWorks = TYPE_WORK_LIST;
-    const optionLevels = LEVEL_LIST;
-    const optionContracts = TYPE_CONTRACT_LIST;
-    const [form] = Form.useForm();
+    const optionsSkills = SKILLS_LIST
+    const optionsLocations = LOCATION_LIST
+    const optiontypeWorks = TYPE_WORK_LIST
+    const optionLevels = LEVEL_LIST
+    const optionContracts = TYPE_CONTRACT_LIST
+    const [form] = Form.useForm()
 
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     const onFinish = async (values: any) => {
         const data: SearchQuery = {
@@ -37,30 +31,30 @@ const SearchClient = () => {
             levels: values.levels,
             typeWorks: values.typeWorks,
             typeContracts: values.typeContracts,
-        };
-        const searchParams = new URLSearchParams();
+        }
+        const searchParams = new URLSearchParams()
         for (const key in data) {
-            const value = data[key as keyof SearchQuery];
+            const value = data[key as keyof SearchQuery]
             if (value) {
                 if (Array.isArray(value)) {
-                    searchParams.append(key, value.join(","));
+                    searchParams.append(key, value.join(','))
                 } else {
-                    searchParams.append(key, value);
+                    searchParams.append(key, value)
                 }
             }
         }
 
-        navigate(`/job?${searchParams.toString()}`);
-    };
+        navigate(`/job?${searchParams.toString()}`)
+    }
 
     const resetForm = () => {
-        form.resetFields();
-        navigate("/job");
-    };
+        form.resetFields()
+        navigate('/job')
+    }
 
     return (
-        <div className={`${styles["search-content"]}`}>
-            <div className={`${styles["container"]}`}>
+        <div className={`${styles['search-content']}`}>
+            <div className={`${styles['container']}`}>
                 <ProForm
                     form={form}
                     onFinish={onFinish}
@@ -70,27 +64,22 @@ const SearchClient = () => {
                 >
                     <Row gutter={[10, 10]}>
                         <Col span={24}>
-                            <strong style={{ fontSize: "24px" }}>
-                                Tìm kiếm
-                            </strong>
+                            <strong style={{ fontSize: '24px' }}>Tìm kiếm</strong>
                         </Col>
                         <Col span={24}>
                             <div
                                 style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    background: "#fff",
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    background: '#fff',
                                     borderRadius: 5,
                                 }}
                             >
-                                <ProForm.Item
-                                    name="skills"
-                                    style={{ width: "100%", margin: 0 }}
-                                >
+                                <ProForm.Item name="skills" style={{ width: '100%', margin: 0 }}>
                                     <Select
                                         style={{
                                             height: 42,
-                                            width: "100%",
+                                            width: '100%',
                                         }}
                                         mode="multiple"
                                         variant="borderless"
@@ -104,8 +93,8 @@ const SearchClient = () => {
                                     style={{
                                         height: 42,
                                         marginLeft: 10,
-                                        background: "#dc3545",
-                                        color: "white",
+                                        background: '#dc3545',
+                                        color: 'white',
                                     }}
                                     icon={<FaSearch />}
                                 >
@@ -122,9 +111,9 @@ const SearchClient = () => {
                                     variant="borderless"
                                     style={{
                                         height: 46,
-                                        width: "100%",
+                                        width: '100%',
                                         borderRadius: 5,
-                                        background: "#fff",
+                                        background: '#fff',
                                     }}
                                     defaultValue="ALL"
                                     placeholder="Tất cả địa điểm"
@@ -139,8 +128,8 @@ const SearchClient = () => {
                                     variant="borderless"
                                     style={{
                                         height: 46,
-                                        width: "100%",
-                                        background: "#fff",
+                                        width: '100%',
+                                        background: '#fff',
                                         borderRadius: 5,
                                     }}
                                     placeholder="Tất cả cấp bậc"
@@ -155,8 +144,8 @@ const SearchClient = () => {
                                     variant="borderless"
                                     style={{
                                         height: 46,
-                                        width: "100%",
-                                        background: "#fff",
+                                        width: '100%',
+                                        background: '#fff',
                                         borderRadius: 5,
                                     }}
                                     placeholder="Tất cả loại công việc"
@@ -170,10 +159,10 @@ const SearchClient = () => {
                                     mode="multiple"
                                     variant="borderless"
                                     style={{
-                                        flexBasis: "21%",
+                                        flexBasis: '21%',
                                         height: 46,
-                                        width: "100%",
-                                        background: "#fff",
+                                        width: '100%',
+                                        background: '#fff',
                                         borderRadius: 5,
                                     }}
                                     placeholder="Tất cả loại hợp đồng"
@@ -187,21 +176,21 @@ const SearchClient = () => {
                                 onClick={resetForm}
                                 style={{
                                     height: 46,
-                                    width: "100%",
+                                    width: '100%',
                                     borderRadius: 5,
-                                    border: "none",
+                                    border: 'none',
                                     fontWeight: 600,
-                                    color: "#424242",
-                                    fontSize: "16px",
-                                    background: "#dbdbdb",
+                                    color: '#424242',
+                                    fontSize: '16px',
+                                    background: '#dbdbdb',
                                 }}
                                 onMouseEnter={(e) => {
-                                    const target = e.currentTarget;
-                                    target.style.background = "#c4c4c4";
+                                    const target = e.currentTarget
+                                    target.style.background = '#c4c4c4'
                                 }}
                                 onMouseLeave={(e) => {
-                                    const target = e.currentTarget;
-                                    target.style.background = "#dbdbdb";
+                                    const target = e.currentTarget
+                                    target.style.background = '#dbdbdb'
                                 }}
                             >
                                 Xóa bộ lọc
@@ -211,6 +200,6 @@ const SearchClient = () => {
                 </ProForm>
             </div>
         </div>
-    );
-};
-export default SearchClient;
+    )
+}
+export default SearchClient

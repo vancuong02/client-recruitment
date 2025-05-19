@@ -1,60 +1,51 @@
-import { Card, Col, Collapse, Row, Tooltip } from "antd";
-import { ProFormSwitch } from "@ant-design/pro-components";
-import { grey } from "@ant-design/colors";
-import { colorMethod } from "@/config/utils";
-import { IPermission } from "@/types/backend";
-import "styles/reset.scss";
-import type { ProFormInstance } from "@ant-design/pro-components";
+import { Card, Col, Collapse, Row, Tooltip } from 'antd'
+import { ProFormSwitch } from '@ant-design/pro-components'
+import { grey } from '@ant-design/colors'
+import { colorMethod } from '@/config/utils'
+import { IPermission } from '@/types/backend'
+import 'styles/reset.scss'
+import type { ProFormInstance } from '@ant-design/pro-components'
 
-const { Panel } = Collapse;
+const { Panel } = Collapse
 
 interface IProps {
-    onChange?: (data: any[]) => void;
-    onReset?: () => void;
-    form: ProFormInstance;
+    onChange?: (data: any[]) => void
+    onReset?: () => void
+    form: ProFormInstance
     listPermissions:
         | {
-              module: string;
-              permissions: IPermission[];
+              module: string
+              permissions: IPermission[]
           }[]
-        | null;
+        | null
 }
 
 const ModuleApi = (props: IProps) => {
-    const { form, listPermissions } = props;
+    const { form, listPermissions } = props
 
     const handleSwitchAll = (value: boolean, name: string) => {
-        const child = listPermissions?.find((item) => item.module === name);
+        const child = listPermissions?.find((item) => item.module === name)
         if (child) {
             child?.permissions?.forEach((item) => {
-                if (item._id)
-                    form.setFieldValue(["permissions", item._id], value);
-            });
+                if (item._id) form.setFieldValue(['permissions', item._id], value)
+            })
         }
-    };
+    }
 
-    const handleSingleCheck = (
-        value: boolean,
-        child: string,
-        parent: string
-    ) => {
-        form.setFieldValue(["permissions", child], value);
+    const handleSingleCheck = (value: boolean, child: string, parent: string) => {
+        form.setFieldValue(['permissions', child], value)
 
         //check all
-        const temp = listPermissions?.find((item) => item.module === parent);
+        const temp = listPermissions?.find((item) => item.module === parent)
         if (temp) {
-            const restPermission = temp?.permissions?.filter(
-                (item) => item._id !== child
-            );
+            const restPermission = temp?.permissions?.filter((item) => item._id !== child)
             if (restPermission && restPermission.length) {
-                const allTrue = restPermission.every((item) =>
-                    form.getFieldValue(["permissions", item._id as string])
-                );
-                form.setFieldValue(["permissions", parent], allTrue && value);
+                const allTrue = restPermission.every((item) => form.getFieldValue(['permissions', item._id as string]))
+                form.setFieldValue(['permissions', parent], allTrue && value)
             }
         }
-    };
-    console.log("listPermissions", listPermissions);
+    }
+    console.log('listPermissions', listPermissions)
 
     return (
         <Card size="small" bordered={false}>
@@ -65,16 +56,15 @@ const ModuleApi = (props: IProps) => {
                         key={index}
                         forceRender
                         extra={
-                            <div className={"customize-form-item"}>
+                            <div className={'customize-form-item'}>
                                 <ProFormSwitch
-                                    name={["permissions", item.module]}
+                                    name={['permissions', item.module]}
                                     fieldProps={{
                                         defaultChecked: false,
                                         onClick: (u, e) => {
-                                            e.stopPropagation();
+                                            e.stopPropagation()
                                         },
-                                        onChange: (v) =>
-                                            handleSwitchAll(v, item.module),
+                                        onChange: (v) => handleSwitchAll(v, item.module),
                                     }}
                                 />
                             </div>
@@ -86,39 +76,32 @@ const ModuleApi = (props: IProps) => {
                                     <Card
                                         size="small"
                                         bodyStyle={{
-                                            display: "flex",
+                                            display: 'flex',
                                             flex: 1,
-                                            flexDirection: "row",
+                                            flexDirection: 'row',
                                         }}
                                     >
                                         <div
                                             style={{
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                alignItems: "center",
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
                                             }}
                                         >
                                             <ProFormSwitch
-                                                name={[
-                                                    "permissions",
-                                                    value._id as string,
-                                                ]}
+                                                name={['permissions', value._id as string]}
                                                 fieldProps={{
                                                     defaultChecked: false,
                                                     onChange: (v) =>
-                                                        handleSingleCheck(
-                                                            v,
-                                                            value._id as string,
-                                                            item.module
-                                                        ),
+                                                        handleSingleCheck(v, value._id as string, item.module),
                                                 }}
                                             />
                                         </div>
                                         <div
                                             style={{
                                                 flex: 1,
-                                                display: "flex",
-                                                flexDirection: "column",
+                                                display: 'flex',
+                                                flexDirection: 'column',
                                             }}
                                         >
                                             <Tooltip title={value?.name}>
@@ -128,22 +111,18 @@ const ModuleApi = (props: IProps) => {
                                                         marginBottom: 3,
                                                     }}
                                                 >
-                                                    {value?.name || ""}
+                                                    {value?.name || ''}
                                                 </p>
-                                                <div
-                                                    style={{ display: "flex" }}
-                                                >
+                                                <div style={{ display: 'flex' }}>
                                                     <p
                                                         style={{
                                                             paddingLeft: 10,
-                                                            fontWeight: "bold",
+                                                            fontWeight: 'bold',
                                                             marginBottom: 0,
-                                                            color: colorMethod(
-                                                                value?.method as string
-                                                            ),
+                                                            color: colorMethod(value?.method as string),
                                                         }}
                                                     >
-                                                        {value?.method || ""}
+                                                        {value?.method || ''}
                                                     </p>
                                                     <p
                                                         style={{
@@ -152,7 +131,7 @@ const ModuleApi = (props: IProps) => {
                                                             color: grey[5],
                                                         }}
                                                     >
-                                                        {value?.apiPath || ""}
+                                                        {value?.apiPath || ''}
                                                     </p>
                                                 </div>
                                             </Tooltip>
@@ -165,7 +144,7 @@ const ModuleApi = (props: IProps) => {
                 ))}
             </Collapse>
         </Card>
-    );
-};
+    )
+}
 
-export default ModuleApi;
+export default ModuleApi

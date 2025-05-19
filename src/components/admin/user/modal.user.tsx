@@ -1,43 +1,30 @@
-import {
-    ModalForm,
-    ProForm,
-    ProFormDigit,
-    ProFormSelect,
-    ProFormText,
-} from "@ant-design/pro-components";
-import { Col, Form, Row, message, notification } from "antd";
-import { isMobile } from "react-device-detect";
-import { useState, useEffect } from "react";
-import {
-    callAdminUpdateUser,
-    callCreateUser,
-    callFetchCompany,
-    callFetchRole,
-    callUpdateUser,
-} from "@/config/api";
-import { IUser } from "@/types/backend";
-import { DebounceSelect } from "./debouce.select";
+import { ModalForm, ProForm, ProFormDigit, ProFormSelect, ProFormText } from '@ant-design/pro-components'
+import { Col, Form, Row, message, notification } from 'antd'
+import { isMobile } from 'react-device-detect'
+import { useState, useEffect } from 'react'
+import { callAdminUpdateUser, callCreateUser, callFetchCompany, callFetchRole, callUpdateUser } from '@/config/api'
+import { IUser } from '@/types/backend'
+import { DebounceSelect } from './debouce.select'
 
 interface IProps {
-    openModal: boolean;
-    setOpenModal: (v: boolean) => void;
-    dataInit?: IUser | null;
-    setDataInit: (v: any) => void;
-    reloadTable: () => void;
+    openModal: boolean
+    setOpenModal: (v: boolean) => void
+    dataInit?: IUser | null
+    setDataInit: (v: any) => void
+    reloadTable: () => void
 }
 
 export interface ICompanySelect {
-    label: string;
-    value: string;
+    label: string
+    value: string
 }
 
 const ModalUser = (props: IProps) => {
-    const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } =
-        props;
-    const [companies, setCompanies] = useState<ICompanySelect[]>([]);
-    const [roles, setRoles] = useState<ICompanySelect[]>([]);
+    const { openModal, setOpenModal, reloadTable, dataInit, setDataInit } = props
+    const [companies, setCompanies] = useState<ICompanySelect[]>([])
+    const [roles, setRoles] = useState<ICompanySelect[]>([])
 
-    const [form] = Form.useForm();
+    const [form] = Form.useForm()
 
     useEffect(() => {
         if (dataInit?._id) {
@@ -47,7 +34,7 @@ const ModalUser = (props: IProps) => {
                         label: dataInit.companyId.name,
                         value: dataInit.companyId._id,
                     },
-                ]);
+                ])
             }
             if (dataInit.role) {
                 setRoles([
@@ -55,14 +42,13 @@ const ModalUser = (props: IProps) => {
                         label: dataInit.role?.name,
                         value: dataInit.role?._id,
                     },
-                ]);
+                ])
             }
         }
-    }, [dataInit]);
+    }, [dataInit])
 
     const submitUser = async (valuesForm: any) => {
-        const { name, email, address, age, gender, password, role, company } =
-            valuesForm;
+        const { name, email, address, age, gender, password, role, company } = valuesForm
         if (dataInit?._id) {
             //update
             const user = {
@@ -72,20 +58,19 @@ const ModalUser = (props: IProps) => {
                 gender,
                 address,
                 role: role?.value ?? role._id,
-                companyId:
-                    company?.value ?? dataInit?.companyId?._id ?? company?._id,
-            };
+                companyId: company?.value ?? dataInit?.companyId?._id ?? company?._id,
+            }
 
-            const res = await callAdminUpdateUser(dataInit?._id, user);
+            const res = await callAdminUpdateUser(dataInit?._id, user)
             if (res.data) {
-                message.success(res.message);
-                handleReset();
-                reloadTable();
+                message.success(res.message)
+                handleReset()
+                reloadTable()
             } else {
                 notification.error({
-                    message: "Có lỗi xảy ra",
+                    message: 'Có lỗi xảy ra',
                     description: res.message,
-                });
+                })
             }
         } else {
             //create
@@ -98,75 +83,75 @@ const ModalUser = (props: IProps) => {
                 address,
                 role: role.value,
                 companyId: company?.value ?? company._id,
-            };
-            const res = await callCreateUser(user);
+            }
+            const res = await callCreateUser(user)
 
             if (res.data) {
-                message.success(res.message);
-                handleReset();
-                reloadTable();
+                message.success(res.message)
+                handleReset()
+                reloadTable()
             } else {
                 notification.error({
-                    message: "Có lỗi xảy ra",
+                    message: 'Có lỗi xảy ra',
                     description: res.message,
-                });
+                })
             }
         }
-    };
+    }
 
     const handleReset = async () => {
-        form.resetFields();
-        setDataInit(null);
-        setCompanies([]);
-        setRoles([]);
-        setOpenModal(false);
-    };
+        form.resetFields()
+        setDataInit(null)
+        setCompanies([])
+        setRoles([])
+        setOpenModal(false)
+    }
 
     // Usage of DebounceSelect
     async function fetchCompanyList(): Promise<ICompanySelect[]> {
-        const res = await callFetchCompany(`current=1&pageSize=100`);
+        const res = await callFetchCompany(`current=1&pageSize=100`)
         if (res && res.data) {
-            const list = res.data.result;
+            const list = res.data.result
             const temp = list.map((item) => {
                 return {
                     label: item.name as string,
                     value: item._id as string,
-                };
-            });
-            return temp;
-        } else return [];
+                }
+            })
+            return temp
+        } else return []
     }
 
     async function fetchRoleList(): Promise<ICompanySelect[]> {
-        const res = await callFetchRole(`current=1&pageSize=100`);
+        const res = await callFetchRole(`current=1&pageSize=100`)
         if (res && res.data) {
-            const list = res.data.result;
+            const list = res.data.result
             const temp = list.map((item) => {
                 return {
                     label: item.name as string,
                     value: item._id as string,
-                };
-            });
-            return temp;
-        } else return [];
+                }
+            })
+            return temp
+        } else return []
     }
 
     return (
         <>
             <ModalForm
-                title={<>{dataInit?._id ? "Cập nhật User" : "Tạo mới User"}</>}
+                title={<>{dataInit?._id ? 'Cập nhật User' : 'Tạo mới User'}</>}
                 open={openModal}
                 modalProps={{
                     onCancel: () => {
-                        handleReset();
+                        handleReset()
                     },
                     afterClose: () => handleReset(),
                     destroyOnClose: true,
-                    width: isMobile ? "100%" : 900,
+                    width: isMobile ? '100%' : 900,
                     keyboard: false,
                     maskClosable: false,
-                    okText: <>{dataInit?._id ? "Cập nhật" : "Tạo mới"}</>,
-                    cancelText: "Hủy",
+                    okText: <>{dataInit?._id ? 'Cập nhật' : 'Tạo mới'}</>,
+                    cancelText: 'Hủy',
                 }}
                 scrollToFirstError={true}
                 preserve={false}
@@ -182,11 +167,11 @@ const ModalUser = (props: IProps) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng không bỏ trống",
+                                    message: 'Vui lòng không bỏ trống',
                                 },
                                 {
-                                    type: "email",
-                                    message: "Vui lòng nhập email hợp lệ",
+                                    type: 'email',
+                                    message: 'Vui lòng nhập email hợp lệ',
                                 },
                             ]}
                             placeholder="Nhập email"
@@ -200,7 +185,7 @@ const ModalUser = (props: IProps) => {
                             rules={[
                                 {
                                     required: dataInit?._id ? false : true,
-                                    message: "Vui lòng không bỏ trống",
+                                    message: 'Vui lòng không bỏ trống',
                                 },
                             ]}
                             placeholder="Nhập password"
@@ -213,7 +198,7 @@ const ModalUser = (props: IProps) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng không bỏ trống",
+                                    message: 'Vui lòng không bỏ trống',
                                 },
                             ]}
                             placeholder="Nhập tên hiển thị"
@@ -226,7 +211,7 @@ const ModalUser = (props: IProps) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng không bỏ trống",
+                                    message: 'Vui lòng không bỏ trống',
                                 },
                             ]}
                             placeholder="Nhập nhập tuổi"
@@ -237,15 +222,15 @@ const ModalUser = (props: IProps) => {
                             name="gender"
                             label="Giới Tính"
                             valueEnum={{
-                                MALE: "Nam",
-                                FEMALE: "Nữ",
-                                OTHER: "Khác",
+                                MALE: 'Nam',
+                                FEMALE: 'Nữ',
+                                OTHER: 'Khác',
                             }}
                             placeholder="Please select a gender"
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng chọn giới tính!",
+                                    message: 'Vui lòng chọn giới tính!',
                                 },
                             ]}
                         />
@@ -257,7 +242,7 @@ const ModalUser = (props: IProps) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng chọn vai trò!",
+                                    message: 'Vui lòng chọn vai trò!',
                                 },
                             ]}
                         >
@@ -269,14 +254,11 @@ const ModalUser = (props: IProps) => {
                                 placeholder="Chọn công vai trò"
                                 fetchOptions={fetchRoleList}
                                 onChange={(newValue: any) => {
-                                    if (
-                                        newValue?.length === 0 ||
-                                        newValue?.length === 1
-                                    ) {
-                                        setRoles(newValue as ICompanySelect[]);
+                                    if (newValue?.length === 0 || newValue?.length === 1) {
+                                        setRoles(newValue as ICompanySelect[])
                                     }
                                 }}
-                                style={{ width: "100%" }}
+                                style={{ width: '100%' }}
                             />
                         </ProForm.Item>
                     </Col>
@@ -295,7 +277,7 @@ const ModalUser = (props: IProps) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng chọn company!",
+                                    message: 'Vui lòng chọn company!',
                                 },
                             ]}
                         >
@@ -304,19 +286,14 @@ const ModalUser = (props: IProps) => {
                                 showSearch
                                 defaultValue={dataInit?.companyId?.name}
                                 value={companies}
-                                placeholder={"Chọn công ty"}
+                                placeholder={'Chọn công ty'}
                                 fetchOptions={fetchCompanyList}
                                 onChange={(newValue: any) => {
-                                    if (
-                                        newValue?.length === 0 ||
-                                        newValue?.length === 1
-                                    ) {
-                                        setCompanies(
-                                            newValue as ICompanySelect[]
-                                        );
+                                    if (newValue?.length === 0 || newValue?.length === 1) {
+                                        setCompanies(newValue as ICompanySelect[])
                                     }
                                 }}
-                                style={{ width: "100%" }}
+                                style={{ width: '100%' }}
                             />
                         </ProForm.Item>
                     </Col>
@@ -327,7 +304,7 @@ const ModalUser = (props: IProps) => {
                             rules={[
                                 {
                                     required: true,
-                                    message: "Vui lòng không bỏ trống",
+                                    message: 'Vui lòng không bỏ trống',
                                 },
                             ]}
                             placeholder="Nhập địa chỉ"
@@ -336,7 +313,7 @@ const ModalUser = (props: IProps) => {
                 </Row>
             </ModalForm>
         </>
-    );
-};
+    )
+}
 
-export default ModalUser;
+export default ModalUser

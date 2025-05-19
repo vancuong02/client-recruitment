@@ -1,17 +1,13 @@
-import { Col, Row, Space, Typography } from "antd";
-import {
-    FacebookOutlined,
-    LinkedinOutlined,
-    YoutubeOutlined,
-} from "@ant-design/icons";
-import "./footer.client.scss";
-import styles from "@/styles/client.module.scss";
-const { Text, Link } = Typography;
+import { Col, Row, Space, Typography } from 'antd'
+import { FacebookOutlined, LinkedinOutlined, YoutubeOutlined } from '@ant-design/icons'
+import './footer.client.scss'
+import styles from '@/styles/client.module.scss'
+const { Text, Link } = Typography
 
 const Footer = () => {
     return (
         <footer className="footer-container">
-            <div className={styles["container"]}>
+            <div className={styles['container']}>
                 <Row gutter={[20, 20]}>
                     <Col xs={24} sm={12} md={6}>
                         <div className="footer-column">
@@ -24,9 +20,7 @@ const Footer = () => {
                                     <Link href="/about-us">About Us</Link>
                                 </li>
                                 <li>
-                                    <Link href="/ai-match-service">
-                                        AI Match Service
-                                    </Link>
+                                    <Link href="/ai-match-service">AI Match Service</Link>
                                 </li>
                                 <li>
                                     <Link href="/contact-us">Contact Us</Link>
@@ -48,19 +42,13 @@ const Footer = () => {
                                     <Link href="/it-story">IT Story</Link>
                                 </li>
                                 <li>
-                                    <Link href="/writing-contest">
-                                        Writing Contest
-                                    </Link>
+                                    <Link href="/writing-contest">Writing Contest</Link>
                                 </li>
                                 <li>
-                                    <Link href="/featured-it-jobs">
-                                        Featured IT Jobs
-                                    </Link>
+                                    <Link href="/featured-it-jobs">Featured IT Jobs</Link>
                                 </li>
                                 <li>
-                                    <Link href="/annual-survey">
-                                        Annual Survey
-                                    </Link>
+                                    <Link href="/annual-survey">Annual Survey</Link>
                                 </li>
                             </ul>
                         </div>
@@ -70,24 +58,16 @@ const Footer = () => {
                             <h3>Terms & Conditions</h3>
                             <ul>
                                 <li>
-                                    <Link href="/privacy-policy">
-                                        Privacy Policy
-                                    </Link>
+                                    <Link href="/privacy-policy">Privacy Policy</Link>
                                 </li>
                                 <li>
-                                    <Link href="/operating-regulation">
-                                        Operating Regulation
-                                    </Link>
+                                    <Link href="/operating-regulation">Operating Regulation</Link>
                                 </li>
                                 <li>
-                                    <Link href="/complaint-handling">
-                                        Complaint Handling
-                                    </Link>
+                                    <Link href="/complaint-handling">Complaint Handling</Link>
                                 </li>
                                 <li>
-                                    <Link href="/terms-conditions">
-                                        Terms & Conditions
-                                    </Link>
+                                    <Link href="/terms-conditions">Terms & Conditions</Link>
                                 </li>
                                 <li>
                                     <Link href="/press">Press</Link>
@@ -103,28 +83,17 @@ const Footer = () => {
                                 <li>Hà Nội: (+84) 983 131 351</li>
                                 <li>Email: love@itviec.com</li>
                                 <li>
-                                    <Link href="/submit-contact">
-                                        Submit contact Information
-                                    </Link>
+                                    <Link href="/submit-contact">Submit contact Information</Link>
                                 </li>
                             </ul>
                             <Space size="middle" className="social-icons">
-                                <Link
-                                    href="https://facebook.com"
-                                    target="_blank"
-                                >
+                                <Link href="https://facebook.com" target="_blank">
                                     <FacebookOutlined />
                                 </Link>
-                                <Link
-                                    href="https://linkedin.com"
-                                    target="_blank"
-                                >
+                                <Link href="https://linkedin.com" target="_blank">
                                     <LinkedinOutlined />
                                 </Link>
-                                <Link
-                                    href="https://youtube.com"
-                                    target="_blank"
-                                >
+                                <Link href="https://youtube.com" target="_blank">
                                     <YoutubeOutlined />
                                 </Link>
                             </Space>
@@ -133,12 +102,10 @@ const Footer = () => {
                 </Row>
             </div>
             <div className="footer-bottom">
-                <Text style={{ color: "#fff" }}>
-                    Copyright © IT VIEC JSC | Tax code: 0312192258
-                </Text>
+                <Text style={{ color: '#fff' }}>Copyright © IT VIEC JSC | Tax code: 0312192258</Text>
             </div>
         </footer>
-    );
-};
+    )
+}
 
-export default Footer;
+export default Footer

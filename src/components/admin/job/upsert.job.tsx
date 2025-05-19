@@ -1,15 +1,6 @@
-import {
-    Breadcrumb,
-    Col,
-    ConfigProvider,
-    Divider,
-    Form,
-    Row,
-    message,
-    notification,
-} from "antd";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { DebounceSelect } from "../user/debouce.select";
+import { Breadcrumb, Col, ConfigProvider, Divider, Form, Row, message, notification } from 'antd'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { DebounceSelect } from '../user/debouce.select'
 import {
     FooterToolbar,
     ProForm,
@@ -18,54 +9,43 @@ import {
     ProFormSelect,
     ProFormSwitch,
     ProFormText,
-} from "@ant-design/pro-components";
-import styles from "styles/admin.module.scss";
-import {
-    LEVEL_LIST,
-    LOCATION_LIST,
-    SKILLS_LIST,
-    TYPE_CONTRACT_LIST,
-    TYPE_WORK_LIST,
-} from "@/config/utils";
-import { ICompanySelect } from "../user/modal.user";
-import { useState, useEffect, useRef } from "react";
-import {
-    callCreateJob,
-    callFetchCompany,
-    callFetchJobById,
-    callUpdateJob,
-} from "@/config/api";
-import { CheckSquareOutlined } from "@ant-design/icons";
-import enUS from "antd/lib/locale/en_US";
-import dayjs from "dayjs";
-import { IJob } from "@/types/backend";
-import { Editor } from "@tinymce/tinymce-react";
+} from '@ant-design/pro-components'
+import styles from 'styles/admin.module.scss'
+import { LEVEL_LIST, LOCATION_LIST, SKILLS_LIST, TYPE_CONTRACT_LIST, TYPE_WORK_LIST } from '@/config/utils'
+import { ICompanySelect } from '../user/modal.user'
+import { useState, useEffect, useRef } from 'react'
+import { callCreateJob, callFetchCompany, callFetchJobById, callUpdateJob } from '@/config/api'
+import { CheckSquareOutlined } from '@ant-design/icons'
+import enUS from 'antd/lib/locale/en_US'
+import dayjs from 'dayjs'
+import { IJob } from '@/types/backend'
+import { Editor } from '@tinymce/tinymce-react'
 
 const ViewUpsertJob = (props: any) => {
-    const [companies, setCompanies] = useState<ICompanySelect[]>();
+    const [companies, setCompanies] = useState<ICompanySelect[]>()
 
-    const navigate = useNavigate();
-    const [value, setValue] = useState<string>("");
-    const editorRef = useRef(null);
-    let location = useLocation();
-    let params = new URLSearchParams(location.search);
-    const id = params?.get("id");
-    const [dataUpdate, setDataUpdate] = useState<IJob | null>(null);
-    const [form] = Form.useForm();
+    const navigate = useNavigate()
+    const [value, setValue] = useState<string>('')
+    const editorRef = useRef(null)
+    let location = useLocation()
+    let params = new URLSearchParams(location.search)
+    const id = params?.get('id')
+    const [dataUpdate, setDataUpdate] = useState<IJob | null>(null)
+    const [form] = Form.useForm()
 
     useEffect(() => {
         const init = async () => {
             if (id) {
-                const res = await callFetchJobById(id);
+                const res = await callFetchJobById(id)
                 if (res && res.data) {
-                    setDataUpdate(res.data);
-                    setValue(res.data.description);
+                    setDataUpdate(res.data)
+                    setValue(res.data.description)
                     setCompanies([
                         {
                             label: res.data.companyId?.name as string,
                             value: res.data.companyId?._id as string,
                         },
-                    ]);
+                    ])
 
                     form.setFieldsValue({
                         ...res.data,
@@ -73,26 +53,26 @@ const ViewUpsertJob = (props: any) => {
                             label: res.data.companyId?.name as string,
                             value: res.data.companyId?._id as string,
                         },
-                    });
+                    })
                 }
             }
-        };
-        init();
-        return () => form.resetFields();
-    }, [id]);
+        }
+        init()
+        return () => form.resetFields()
+    }, [id])
 
     async function fetchCompanyList(): Promise<ICompanySelect[]> {
-        const res = await callFetchCompany(`current=1&pageSize=100`);
+        const res = await callFetchCompany(`current=1&pageSize=100`)
         if (res && res.data) {
-            const list = res.data.result;
+            const list = res.data.result
             const temp = list.map((item) => {
                 return {
                     label: item.name as string,
                     value: item._id as string,
-                };
-            });
-            return temp;
-        } else return [];
+                }
+            })
+            return temp
+        } else return []
     }
 
     const onFinish = async (values: any) => {
@@ -108,26 +88,24 @@ const ViewUpsertJob = (props: any) => {
                 quantity: values.quantity,
                 description: value,
                 companyId: values.companyId.value,
-                startDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(
-                    values.startDate
-                )
-                    ? dayjs(values.startDate, "DD/MM/YYYY").toDate()
+                startDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.startDate)
+                    ? dayjs(values.startDate, 'DD/MM/YYYY').toDate()
                     : values.startDate,
                 endDate: /[0-9]{2}[/][0-9]{2}[/][0-9]{4}$/.test(values.endDate)
-                    ? dayjs(values.endDate, "DD/MM/YYYY").toDate()
+                    ? dayjs(values.endDate, 'DD/MM/YYYY').toDate()
                     : values.endDate,
                 isActive: values.isActive,
-            };
+            }
 
-            const res = await callUpdateJob(job, dataUpdate._id);
+            const res = await callUpdateJob(job, dataUpdate._id)
             if (res.data) {
-                message.success("Cập nhật job thành công");
-                navigate("/admin/job");
+                message.success('Cập nhật job thành công')
+                navigate('/admin/job')
             } else {
                 notification.error({
-                    message: "Có lỗi xảy ra",
+                    message: 'Có lỗi xảy ra',
                     description: res.message,
-                });
+                })
             }
         } else {
             const job = {
@@ -141,29 +119,29 @@ const ViewUpsertJob = (props: any) => {
                 quantity: values.quantity,
                 description: value,
                 companyId: values.companyId.value,
-                startDate: dayjs(values.startDate, "DD/MM/YYYY").toDate(),
-                endDate: dayjs(values.endDate, "DD/MM/YYYY").toDate(),
+                startDate: dayjs(values.startDate, 'DD/MM/YYYY').toDate(),
+                endDate: dayjs(values.endDate, 'DD/MM/YYYY').toDate(),
                 isActive: values.isActive,
-            };
+            }
 
-            console.log("job", job);
+            console.log('job', job)
 
-            const res = await callCreateJob(job);
+            const res = await callCreateJob(job)
             if (res.data) {
-                message.success("Tạo mới job thành công");
-                navigate("/admin/job");
+                message.success('Tạo mới job thành công')
+                navigate('/admin/job')
             } else {
                 notification.error({
-                    message: "Có lỗi xảy ra",
+                    message: 'Có lỗi xảy ra',
                     description: res.message,
-                });
+                })
             }
         }
-    };
+    }
 
     return (
-        <div className={styles["upsert-job-container"]}>
-            <div className={styles["title"]}>
+        <div className={styles['upsert-job-container']}>
+            <div className={styles['title']}>
                 <Breadcrumb
                     separator=">"
                     items={[
@@ -171,7 +149,7 @@ const ViewUpsertJob = (props: any) => {
                             title: <Link to="/admin/job">Manage Job</Link>,
                         },
                         {
-                            title: "Upsert Job",
+                            title: 'Upsert Job',
                         },
                     ]}
                 />
@@ -183,19 +161,11 @@ const ViewUpsertJob = (props: any) => {
                         onFinish={onFinish}
                         submitter={{
                             searchConfig: {
-                                resetText: "Hủy",
-                                submitText: (
-                                    <>
-                                        {dataUpdate?._id
-                                            ? "Cập nhật Job"
-                                            : "Tạo mới Job"}
-                                    </>
-                                ),
+                                resetText: 'Hủy',
+                                submitText: <>{dataUpdate?._id ? 'Cập nhật Job' : 'Tạo mới Job'}</>,
                             },
-                            onReset: () => navigate("/admin/job"),
-                            render: (_: any, dom: any) => (
-                                <FooterToolbar>{dom}</FooterToolbar>
-                            ),
+                            onReset: () => navigate('/admin/job'),
+                            render: (_: any, dom: any) => <FooterToolbar>{dom}</FooterToolbar>,
                             submitButtonProps: {
                                 icon: <CheckSquareOutlined />,
                             },
@@ -209,7 +179,7 @@ const ViewUpsertJob = (props: any) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng nhập tên job!",
+                                            message: 'Vui lòng nhập tên job!',
                                         },
                                     ]}
                                     placeholder="Tên job"
@@ -224,7 +194,7 @@ const ViewUpsertJob = (props: any) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng chọn kỹ năng!",
+                                            message: 'Vui lòng chọn kỹ năng!',
                                         },
                                     ]}
                                     allowClear
@@ -238,15 +208,13 @@ const ViewUpsertJob = (props: any) => {
                                 <ProFormSelect
                                     name="locations"
                                     label="Địa điểm"
-                                    options={LOCATION_LIST.filter(
-                                        (item) => item.value !== "ALL"
-                                    )}
+                                    options={LOCATION_LIST.filter((item) => item.value !== 'ALL')}
                                     placeholder="Địa chỉ"
                                     mode="multiple"
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng chọn địa điểm!",
+                                            message: 'Vui lòng chọn địa điểm!',
                                         },
                                     ]}
                                 />
@@ -258,7 +226,7 @@ const ViewUpsertJob = (props: any) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng nhập mức lương!",
+                                            message: 'Vui lòng nhập mức lương!',
                                         },
                                     ]}
                                     fieldProps={{
@@ -274,7 +242,7 @@ const ViewUpsertJob = (props: any) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng nhập số lượng!",
+                                            message: 'Vui lòng nhập số lượng!',
                                         },
                                     ]}
                                     placeholder="Số lượng"
@@ -285,14 +253,12 @@ const ViewUpsertJob = (props: any) => {
                                     name="levels"
                                     label="Trình độ"
                                     mode="multiple"
-                                    options={LEVEL_LIST.filter(
-                                        (item) => item.value !== "ALL"
-                                    )}
+                                    options={LEVEL_LIST.filter((item) => item.value !== 'ALL')}
                                     placeholder="Trình độ"
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng chọn trình độ!",
+                                            message: 'Vui lòng chọn trình độ!',
                                         },
                                     ]}
                                 />
@@ -306,8 +272,7 @@ const ViewUpsertJob = (props: any) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message:
-                                                "Vui lòng chọn loại hợp đồng!",
+                                            message: 'Vui lòng chọn loại hợp đồng!',
                                         },
                                     ]}
                                 />
@@ -321,8 +286,7 @@ const ViewUpsertJob = (props: any) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message:
-                                                "Vui lòng chọn loại công việc!",
+                                            message: 'Vui lòng chọn loại công việc!',
                                         },
                                     ]}
                                 />
@@ -336,8 +300,7 @@ const ViewUpsertJob = (props: any) => {
                                         rules={[
                                             {
                                                 required: true,
-                                                message:
-                                                    "Vui lòng chọn company!",
+                                                message: 'Vui lòng chọn company!',
                                             },
                                         ]}
                                     >
@@ -349,16 +312,11 @@ const ViewUpsertJob = (props: any) => {
                                             placeholder="Chọn công ty"
                                             fetchOptions={fetchCompanyList}
                                             onChange={(newValue: any) => {
-                                                if (
-                                                    newValue?.length === 0 ||
-                                                    newValue?.length === 1
-                                                ) {
-                                                    setCompanies(
-                                                        newValue as ICompanySelect[]
-                                                    );
+                                                if (newValue?.length === 0 || newValue?.length === 1) {
+                                                    setCompanies(newValue as ICompanySelect[])
                                                 }
                                             }}
-                                            style={{ width: "100%" }}
+                                            style={{ width: '100%' }}
                                         />
                                     </ProForm.Item>
                                 </Col>
@@ -369,16 +327,14 @@ const ViewUpsertJob = (props: any) => {
                                 <ProFormDatePicker
                                     label="Ngày bắt đầu"
                                     name="startDate"
-                                    normalize={(value) =>
-                                        value && dayjs(value, "DD/MM/YYYY")
-                                    }
+                                    normalize={(value) => value && dayjs(value, 'DD/MM/YYYY')}
                                     fieldProps={{
-                                        format: "DD/MM/YYYY",
+                                        format: 'DD/MM/YYYY',
                                     }}
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng chọn ngày cấp",
+                                            message: 'Vui lòng chọn ngày cấp',
                                         },
                                     ]}
                                     placeholder="dd/mm/yyyy"
@@ -388,17 +344,15 @@ const ViewUpsertJob = (props: any) => {
                                 <ProFormDatePicker
                                     label="Ngày kết thúc"
                                     name="endDate"
-                                    normalize={(value) =>
-                                        value && dayjs(value, "DD/MM/YYYY")
-                                    }
+                                    normalize={(value) => value && dayjs(value, 'DD/MM/YYYY')}
                                     fieldProps={{
-                                        format: "DD/MM/YYYY",
+                                        format: 'DD/MM/YYYY',
                                     }}
                                     // width="auto"
                                     rules={[
                                         {
                                             required: true,
-                                            message: "Vui lòng chọn ngày cấp",
+                                            message: 'Vui lòng chọn ngày cấp',
                                         },
                                     ]}
                                     placeholder="dd/mm/yyyy"
@@ -423,56 +377,48 @@ const ViewUpsertJob = (props: any) => {
                                     rules={[
                                         {
                                             required: true,
-                                            message:
-                                                "Vui lòng nhập miêu tả job!",
+                                            message: 'Vui lòng nhập miêu tả job!',
                                         },
                                     ]}
                                 >
                                     <Editor
-                                        apiKey={
-                                            import.meta.env.VITE_API_KEY_TINYMCE
-                                        }
-                                        onEditorChange={(
-                                            content: any,
-                                            editor: any
-                                        ) => {
-                                            setValue(content);
+                                        apiKey={import.meta.env.VITE_API_KEY_TINYMCE}
+                                        onEditorChange={(content: any, editor: any) => {
+                                            setValue(content)
                                         }}
-                                        onInit={(evt: any, editor: any) =>
-                                            (editorRef.current = editor)
-                                        }
+                                        onInit={(evt: any, editor: any) => (editorRef.current = editor)}
                                         init={{
                                             height: 500,
                                             menubar: false,
                                             statusbar: false,
                                             branding: false,
                                             plugins: [
-                                                "advlist",
-                                                "autolink",
-                                                "lists",
-                                                "link",
-                                                "image",
-                                                "charmap",
-                                                "preview",
-                                                "anchor",
-                                                "searchreplace",
-                                                "visualblocks",
-                                                "code",
-                                                "fullscreen",
-                                                "insertdatetime",
-                                                "media",
-                                                "table",
-                                                "code",
-                                                "help",
-                                                "wordcount",
+                                                'advlist',
+                                                'autolink',
+                                                'lists',
+                                                'link',
+                                                'image',
+                                                'charmap',
+                                                'preview',
+                                                'anchor',
+                                                'searchreplace',
+                                                'visualblocks',
+                                                'code',
+                                                'fullscreen',
+                                                'insertdatetime',
+                                                'media',
+                                                'table',
+                                                'code',
+                                                'help',
+                                                'wordcount',
                                             ],
                                             toolbar:
-                                                "undo redo | blocks | " +
-                                                "bold italic forecolor | alignleft aligncenter " +
-                                                "alignright alignjustify | bullist numlist outdent indent | " +
-                                                "removeformat | help",
+                                                'undo redo | blocks | ' +
+                                                'bold italic forecolor | alignleft aligncenter ' +
+                                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                                'removeformat | help',
                                             content_style:
-                                                "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                                                'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
                                         }}
                                     />
                                 </ProForm.Item>
@@ -483,7 +429,7 @@ const ViewUpsertJob = (props: any) => {
                 </ConfigProvider>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default ViewUpsertJob;
+export default ViewUpsertJob
